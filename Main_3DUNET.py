@@ -6,12 +6,12 @@ from DS import DS
 
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
-batch_size = 5
+batch_size = 2
 epochs = 1000
 max_gray_level = 4096
 testrate = 0
 K = 5
-angles = [90, 180, 270]
+angles = []
 ds = DS('.\data\\', patch_size, K, angles)
 
 for fold in range(0,K):
@@ -33,4 +33,4 @@ for fold in range(0,K):
         for j in range(0, patch_size[2]):
             image[:, :, 0] = classes[i, :, :, j, 0]  # red for predicted by model
             image[:, :, 1] = y_train[i, :, :, j, 0]  # green for ground truth
-            plt.imsave('D:\\result\\' + str(fold+1) + '-' + str(i) + '-' + str(j) + '.jpg', image)
+            plt.imsave('C:\\result\\' + str(fold+1) + '-' + str(i) + '-' + str(j) + '.jpg', image)

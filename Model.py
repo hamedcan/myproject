@@ -2,7 +2,7 @@ import numpy as np
 from keras import backend as K
 from keras.engine import Input, Model
 from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation
-from keras.optimizers import Adam
+from keras import optimizers
 from keras.layers.merge import concatenate
 
 
@@ -66,7 +66,10 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
-    model.compile(optimizer=Adam(lr=initial_learning_rate), loss=dice_coef_loss , metrics=[dice_coef])
+    sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    adam = optimizers.Adam(lr=initial_learning_rate)
+
+    model.compile(optimizer=sgd, loss=dice_coef_loss , metrics=[dice_coef])
     return model
 
 
