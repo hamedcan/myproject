@@ -63,12 +63,33 @@ class DS:
             self.test_indexes.append(test_index)
 
     def augment_rotation(self, count, images, label_maps, centers):
-        print('DS - augmenting')
+        print('DS - augmenting__rotation')
         for i in range(0, count):
-            print('DS - image : ', i)
+            print('DS - rotation - image : ', i)
             for angle in self.angles:
                 images.append(scipy.ndimage.rotate(images[i], angle=-angle))
                 label_maps.append(scipy.ndimage.rotate(label_maps[i], angle=-angle))
+                x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (angle/180)*math.pi)
+                centers = np.vstack((centers, [x, y, centers[i, 2]]))
+
+                # print(centers[i])
+                # print(centers[-1])
+                # plt.imshow(images[i][...,5])
+                # plt.show()
+                # plt.imshow(images[-1][...,5])
+                # plt.show()
+                # plt.imshow(label_maps[i][...,5])
+                # plt.show()
+                # plt.imshow(label_maps[-1][...,5])
+                # plt.show()
+
+    def augment_flip(self, count, images, label_maps, centers):
+        print('DS - augmenting__fliping')
+        for i in range(0, count):
+            print('DS - fliping - image : ', i)
+            for angle in self.angles:
+                images.append(scipy.ndimage.flip(images[i], angle=-angle))
+                label_maps.append(scipy.ndimage.flip(label_maps[i], angle=-angle))
                 x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (angle/180)*math.pi)
                 centers = np.vstack((centers, [x, y, centers[i, 2]]))
 
