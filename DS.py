@@ -26,10 +26,7 @@ class DS:
         self.count = 0
 
         self.load()
-        self.augment()
         self.generate_k_fold_indexes()
-
-
 
     def load(self):
         print('DS - loading')
@@ -65,25 +62,26 @@ class DS:
             self.train_indexes.append(train_index)
             self.test_indexes.append(test_index)
 
-    def augment(self):
+    def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting')
-        for i in range(0, self.count):
+        for i in range(0, count):
             print('DS - image : ', i)
             for angle in self.angles:
-                self.images.append(scipy.ndimage.rotate(self.images[i], angle=-angle))
-                self.label_maps.append(scipy.ndimage.rotate(self.label_maps[i], angle=-angle))
-                x, y = self.rotate(self.centers[i, 0], self.centers[i, 1], self.images[i].shape[0]/2, self.images[i].shape[1]/2, (angle/180)*math.pi)
-                self.centers = np.vstack((self.centers, [x , y, self.centers[i,2]]))
+                images.append(scipy.ndimage.rotate(images[i], angle=-angle))
+                label_maps.append(scipy.ndimage.rotate(label_maps[i], angle=-angle))
+                x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (angle/180)*math.pi)
+                centers = np.vstack((centers, [x, y, centers[i, 2]]))
 
-                # print(self.centers[i])
-                # print(self.centers[-1])
-                # plt.imshow(self.images[-1][...,5])
+                # print(centers[i])
+                # print(centers[-1])
+                # plt.imshow(images[i][...,5])
                 # plt.show()
-                # plt.imshow(self.label_maps[-1][...,5])
+                # plt.imshow(images[-1][...,5])
                 # plt.show()
-
-
-
+                # plt.imshow(label_maps[i][...,5])
+                # plt.show()
+                # plt.imshow(label_maps[-1][...,5])
+                # plt.show()
 
     def rotate(self, px, py, ox, oy, angle):
 
@@ -102,21 +100,36 @@ class DS:
 
     def get_data(self, fold):
         print('DS - start getting data')
+        train_count = len(self.train_indexes[fold])
+        test_count = len(self.test_indexes[fold])
+
         x_train = []
         y_train = []
 
         x_test = []
         y_test = []
 
+        train_image = []
+        train_label_map = []
+        train_center = np.zeros((train_count * (len(self.angles)+1), 3))
+
         patch_size = self.patch_size
 
-        train_count = len(self.train_indexes[fold])
-        test_count = len(self.test_indexes[fold])
-        # ======================================================================================================
         for i in self.train_indexes[fold]:
-            image = self.images[i]
-            label_map = self.label_maps[i]
-            center = self.centers[i]
+            train_image.append(self.images[i])
+            train_label_map.append(self.label_maps[i])
+            train_center[i, 0] = self.centers[i, 0]
+            train_center[i, 1] = self.centers[i, 1]
+            train_center[i, 2] = self.centers[i, 2]
+
+        train_center = np.array(train_center).astype(np.int)
+        self.augment(train_count, train_image, train_label_map, train_center)
+        train_count *= (len(self.angles)+1)
+        # ======================================================================================================
+        for i in range(0, train_count):
+            image = train_image[i]
+            label_map = train_label_map[i]
+            center = train_center[i]
             ystart = max([center[0] - int(patch_size[0] / 2), 0])
             yend = min([center[0] + int(patch_size[0] / 2), image.shape[0]])
             xstart = max([center[1] - int(patch_size[1] / 2), 0])
@@ -134,13 +147,6 @@ class DS:
             label_map_tmp[:real_size[0], :real_size[1], :real_size[2]] = label_map[ystart:yend, xstart:xend,
                                                                          zstart:zend]
             y_train.append(label_map_tmp)
-
-            # print(label_map_tmp.shape)
-            # print(image_tmp.shape)
-            # plt.imshow(image_tmp[...,5])
-            # plt.show()
-            # plt.imshow(label_map_tmp[...,5])
-            # plt.show()
 
         x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
         y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
@@ -167,13 +173,6 @@ class DS:
             label_map_tmp[:real_size[0], :real_size[1], :real_size[2]] = label_map[ystart:yend, xstart:xend,
                                                                              zstart:zend]
             y_test.append(label_map_tmp)
-
-            # print(label_map_tmp.shape)
-            # print(image_tmp.shape)
-            # plt.imshow(image_tmp[...,5])
-            # plt.show()
-            # plt.imshow(label_map_tmp[...,5])
-            # plt.show()
 
         x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
         y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))

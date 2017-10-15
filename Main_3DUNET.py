@@ -11,7 +11,7 @@ epochs = 1000
 max_gray_level = 4096
 testrate = 0
 K = 5
-angles = []
+angles = [90, 45]
 ds = DS('.\data\\', patch_size, K, angles)
 
 for fold in range(0,K):
