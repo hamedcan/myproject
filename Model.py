@@ -70,7 +70,7 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
     sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
     adam = optimizers.Adam(lr=initial_learning_rate)
 
-    model.compile(optimizer=sgd, loss=dice_coef_loss , metrics=[dice_coef])
+    model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef])
     return model
 
 
