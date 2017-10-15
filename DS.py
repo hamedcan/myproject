@@ -115,12 +115,14 @@ class DS:
 
         patch_size = self.patch_size
 
+        j = 0
         for i in self.train_indexes[fold]:
             train_image.append(self.images[i])
             train_label_map.append(self.label_maps[i])
-            train_center[i, 0] = self.centers[i, 0]
-            train_center[i, 1] = self.centers[i, 1]
-            train_center[i, 2] = self.centers[i, 2]
+            train_center[j, 0] = self.centers[i, 0]
+            train_center[j, 1] = self.centers[i, 1]
+            train_center[j, 2] = self.centers[i, 2]
+            j += 1
 
         train_center = np.array(train_center).astype(np.int)
         # self.augment_rotation(train_count, train_image, train_label_map, train_center)
