@@ -93,7 +93,7 @@ class DS:
                 x, y = [centers[i, 0], images[i].shape[1] - centers[i, 1]]
                 centers = np.vstack((centers, [x, y, centers[i, 2]]))
 
-    def rotate(px, py, ox, oy, angle):
+    def rotate(self, px, py, ox, oy, angle):
         qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
         qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
         return math.ceil(qx), math.ceil(qy)
