@@ -21,6 +21,12 @@ images = []
 centers = []
 count = 0
 
+
+def rotate(px, py, ox, oy, angle):
+    qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+    qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+    return math.ceil(qx), math.ceil(qy)
+
 wb = open_workbook(path + 'data.xlsx')
 for s in wb.sheets():
     nrows = s._dimnrows
@@ -49,21 +55,30 @@ for img_count in range(0, 5):
 
 
 i = 4
-print(centers[i])
-plt.imshow(images[i][...,20])
-plt.show()
-plt.imshow(label_maps[i][...,20])
-plt.show()
+# print(centers[i])
+# plt.imshow(images[i][...,20])
+# plt.show()
+# plt.imshow(label_maps[i][...,20])
+# plt.show()
 
 hamed = images[i][:,::-1,:]
-shapan = label_maps[i][:,::-1,:]
+shapan = label_maps[i][:, ::-1, :]
 
-plt.imshow(hamed[...,20])
+centers[i,0] = 149
+centers[i,1] = 227
+shapan1 = np.zeros((images[i].shape[0], images[i].shape[1]))
+shapan1[centers[i,0],centers[i,1]] = 1;
+shapan1[139, 127] = 1;
+
+plt.imshow(shapan1)
 plt.show()
-plt.imshow(shapan[...,20])
+x, y = rotate(centers[i, 0], centers[i, 1], images[i].shape[0] / 2, images[i].shape[1] / 2,
+                   (-145 / 180) * math.pi)
+
+print(images[i].shape[0] / 2, images[i].shape[1] / 2)
+print(x,y)
+shapan1[x,y] = 1;
+plt.imshow(shapan1)
 plt.show()
-
-
-
 
 

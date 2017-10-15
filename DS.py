@@ -69,7 +69,7 @@ class DS:
             for angle in self.angles:
                 images.append(scipy.ndimage.rotate(images[i], angle=-angle))
                 label_maps.append(scipy.ndimage.rotate(label_maps[i], angle=-angle))
-                x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (angle/180)*math.pi)
+                x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (-angle/180)*math.pi)
                 centers = np.vstack((centers, [x, y, centers[i, 2]]))
 
                 # print(centers[i])
@@ -93,19 +93,9 @@ class DS:
                 x, y = [centers[i, 0], images[i].shape[1] - centers[i, 1]]
                 centers = np.vstack((centers, [x, y, centers[i, 2]]))
 
-    def rotate(self, px, py, ox, oy, angle):
-
-        py_tmp = 2 * ox - px
-        px_tmp = py
-
-        px = px_tmp
-        py = py_tmp
-
-        px_tmp = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-        py_tmp = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-
-        qy = 2 * ox - px_tmp
-        qx = py_tmp
+    def rotate(px, py, ox, oy, angle):
+        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
         return math.ceil(qx), math.ceil(qy)
 
     def get_data(self, fold):
