@@ -6,7 +6,7 @@ from keras import optimizers
 from keras.layers.merge import concatenate
 
 
-def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.000001, deconvolution=False, downsize_filters_factor=4):
+def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.00001, deconvolution=False, downsize_filters_factor=4):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -65,7 +65,7 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
-    sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    # sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
     adam = optimizers.Adam(lr=initial_learning_rate)
 
     model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef])
