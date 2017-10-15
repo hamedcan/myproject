@@ -7,7 +7,7 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 8
-epochs = 200
+epochs = 500
 max_gray_level = 4096
 testrate = 0
 K = 5

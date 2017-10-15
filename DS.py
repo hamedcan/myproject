@@ -123,9 +123,9 @@ class DS:
             train_center[i, 2] = self.centers[i, 2]
 
         train_center = np.array(train_center).astype(np.int)
-        # self.augment_rotation(train_count, train_image, train_label_map, train_center)
-        self.augment_flip(train_count, train_image, train_label_map, train_center)
-        train_count *= 2
+        self.augment_rotation(train_count, train_image, train_label_map, train_center)
+        # self.augment_flip(train_count, train_image, train_label_map, train_center)
+        # train_count *= 2
         train_count *= (len(self.angles)+1)
         # ======================================================================================================
         for i in range(0, train_count):
