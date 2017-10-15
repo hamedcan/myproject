@@ -6,12 +6,12 @@ from DS import DS
 
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
-batch_size = 2
-epochs = 1000
+batch_size = 8
+epochs = 200
 max_gray_level = 4096
 testrate = 0
 K = 5
-angles = [90, 45]
+angles = [90, 180, 270]
 ds = DS('.\data\\', patch_size, K, angles)
 
 for fold in range(0,K):
