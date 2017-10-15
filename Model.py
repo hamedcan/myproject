@@ -30,24 +30,20 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
     # batch = BatchNormalization()
 
     inputs = Input(input_shape)
-    conv1 = Conv3D(int(32 / downsize_filters_factor), (3, 3, 3), padding='same')(inputs)
-    batch1 = BatchNormalization(conv1)
-    activation1 = Activation('relu', batch1)
-    conv1 = Conv3D(int(64 / downsize_filters_factor), (3, 3, 3), padding='same')(activation1)
-    batch2 = BatchNormalization(conv1)
-    activation2 = Activation('relu', batch2)
-    pool1 = MaxPooling3D(pool_size=pool_size, strides=2)(activation2)
+    conv1 = Conv3D(int(32 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(inputs)
+    conv1 = Conv3D(int(64 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(conv1)
+    pool1 = MaxPooling3D(pool_size=pool_size, strides=2)(conv1)
 
-    conv2 = Conv3D(int(64 / downsize_filters_factor), (3, 3, 3), padding='same')(pool1)
-    conv2 = Conv3D(int(128 / downsize_filters_factor), (3, 3, 3), padding='same')(conv2)
+    conv2 = Conv3D(int(64 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(pool1)
+    conv2 = Conv3D(int(128 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(conv2)
     pool2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv2)
 
-    conv3 = Conv3D(int(128 / downsize_filters_factor), (3, 3, 3), padding='same')(pool2)
-    conv3 = Conv3D(int(256 / downsize_filters_factor), (3, 3, 3), padding='same')(conv3)
+    conv3 = Conv3D(int(128 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(pool2)
+    conv3 = Conv3D(int(256 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(conv3)
     pool3 = MaxPooling3D(pool_size=pool_size, strides=2)(conv3)
 
-    conv4 = Conv3D(int(256 / downsize_filters_factor), (3, 3, 3), padding='same')(pool3)
-    conv4 = Conv3D(int(512 / downsize_filters_factor), (3, 3, 3), padding='same')(conv4)
+    conv4 = Conv3D(int(256 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(pool3)
+    conv4 = Conv3D(int(512 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(conv4)
 
     up5 = get_upconv(pool_size=pool_size, deconvolution=deconvolution, depth=2,
                      nb_filters=int(512 / downsize_filters_factor), image_shape=input_shape[-3:])(conv4)

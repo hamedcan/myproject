@@ -88,21 +88,10 @@ class DS:
         for i in range(0, count):
             print('DS - fliping - image : ', i)
             for angle in self.angles:
-                images.append(scipy.ndimage.flip(images[i], angle=-angle))
-                label_maps.append(scipy.ndimage.flip(label_maps[i], angle=-angle))
-                x, y = self.rotate(centers[i, 0], centers[i, 1], images[i].shape[0]/2, images[i].shape[1]/2, (angle/180)*math.pi)
+                images.append(images[i][:, ::-1, :])
+                label_maps.append(label_maps[i][:, ::-1, :])
+                x, y = [centers[i, 0], images[i].shape[1] - centers[i, 1]]
                 centers = np.vstack((centers, [x, y, centers[i, 2]]))
-
-                # print(centers[i])
-                # print(centers[-1])
-                # plt.imshow(images[i][...,5])
-                # plt.show()
-                # plt.imshow(images[-1][...,5])
-                # plt.show()
-                # plt.imshow(label_maps[i][...,5])
-                # plt.show()
-                # plt.imshow(label_maps[-1][...,5])
-                # plt.show()
 
     def rotate(self, px, py, ox, oy, angle):
 
@@ -144,7 +133,7 @@ class DS:
             train_center[i, 2] = self.centers[i, 2]
 
         train_center = np.array(train_center).astype(np.int)
-        self.augment_rotation(train_count, train_image, train_label_map, train_center)
+        self.augment_flip(train_count, train_image, train_label_map, train_center)
         train_count *= (len(self.angles)+1)
         # ======================================================================================================
         for i in range(0, train_count):
