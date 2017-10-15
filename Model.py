@@ -27,8 +27,6 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
     print('deconvolution: ', deconvolution)
 
 
-    # batch = BatchNormalization()
-
     inputs = Input(input_shape)
     conv1 = Conv3D(int(32 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(inputs)
     conv1 = Conv3D(int(64 / downsize_filters_factor), (3, 3, 3), activation='relu', padding='same')(conv1)
