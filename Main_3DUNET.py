@@ -1,24 +1,24 @@
 from __future__ import print_function
-import Model
+import Model5
 import numpy as np
 from matplotlib import pyplot as plt
 from DS import DS
 
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
-batch_size = 5
-epochs = 500
+batch_size = 8
+epochs = 1000
 max_gray_level = 4096
 testrate = 0
 K = 5
-angles = [45]
+angles = [90, 180, 270]
 ds = DS('.\data\\', patch_size, K, angles)
 
 for fold in range(0,K):
     print('===================================================================================================',K+1)
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     # define mode##################################################################################
-    model = Model.get_model(input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+    model = Model5.get_model(input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
     # train model##################################################################################
     print('epoch: ', epochs)
     print('batch size: ', batch_size)
