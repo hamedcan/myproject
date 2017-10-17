@@ -1,5 +1,5 @@
 from __future__ import print_function
-import Model5
+import new_model as Model
 import numpy as np
 from matplotlib import pyplot as plt
 from DS import DS
@@ -18,7 +18,7 @@ for fold in range(0,K):
     print('===================================================================================================',K+1)
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     # define mode##################################################################################
-    model = Model5.get_model(input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+    model = Model.get_model(input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
     # train model##################################################################################
     print('epoch: ', epochs)
     print('batch size: ', batch_size)
