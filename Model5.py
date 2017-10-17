@@ -6,7 +6,7 @@ from keras.optimizers import Adam
 from keras.layers.merge import concatenate
 
 
-def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.00001, deconvolution=False, downsize_filters_factor=1):
+def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.00001, deconvolution=False, downsize_filters_factor=4):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
