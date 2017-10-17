@@ -105,11 +105,11 @@ class DS:
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
 
 
-        # self.augment_rotation(train_count, train_image, train_label_map, train_center)
-        # train_count *= (len(self.angles) + 1)
-        #
-        # self.augment_flip(train_count, train_image, train_label_map, train_center)
-        # train_count *= 2
+        self.augment_rotation(train_count, train_image, train_label_map, train_center)
+        train_count *= (len(self.angles) + 1)
+
+        self.augment_flip(train_count, train_image, train_label_map, train_center)
+        train_count *= 2
         # ======================================================================================================
         for i in range(0, train_count):
             image = train_image[i]
