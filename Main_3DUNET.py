@@ -8,8 +8,6 @@ from DS import DS
 patch_size = [64, 64, 16]
 batch_size = 8
 epochs = 200
-max_gray_level = 4096
-testrate = 0
 K = 5
 angles = [90, 180, 270]
 ds = DS('.\data\\', patch_size, K, angles)
@@ -31,6 +29,7 @@ for fold in range(0,K):
     image = np.zeros([patch_size[0], patch_size[1], 3])
     for i in range(0, x_train.shape[0]):
         for j in range(0, patch_size[2]):
-            image[:, :, 0] = classes[i, :, :, j, 0]  # red for predicted by model
-            image[:, :, 1] = y_train[i, :, :, j, 0]  # green for ground truth
-            plt.imsave('C:\\result\\' + str(fold+1) + '-' + str(i) + '-' + str(j) + '.jpg', image)
+            image[:, :, 0] = x_train[i, :, :, j, 0] + (classes[i, :, :, j, 0]/4)  # red for predicted by model
+            image[:, :, 1] = x_train[i, :, :, j, 0] + (y_train[i, :, :, j, 0]/4)  # green for ground truth
+            image[:, :, 2] = x_train[i, :, :, j, 0]
+            plt.imsave('C:\\result\\' + str(fold+1) + '-' + str(i) + '-' + str(j) + '.png', image)
