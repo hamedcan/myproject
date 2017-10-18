@@ -1,5 +1,5 @@
 from __future__ import print_function
-import new_model as Model
+import Model as Model
 import numpy as np
 from matplotlib import pyplot as plt
 from DS import DS
