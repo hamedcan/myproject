@@ -67,7 +67,7 @@ def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rat
 
     adam = optimizers.Adam(lr=initial_learning_rate)
 
-    model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef])
+    model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef, 'acc'])
     return model
 
 
