@@ -66,7 +66,7 @@ class DS:
                 images.append(scipy.ndimage.interpolation.zoom(images[i], j))
                 label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j)))
                 centers.append([round(centers[i][0]*j), round(centers[i][1]*j), round(centers[i][2]*j)])
-        return count * (len(j) + 1)
+        return count * (len(scale) + 1)
 
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
