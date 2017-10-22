@@ -1,7 +1,8 @@
 import numpy as np
 import math
+import scipy.misc as msc
 import scipy.io
-import scipy.ndimage
+import scipy.ndimage as ndimage
 import matplotlib.pyplot as plt
 from xlrd import open_workbook
 patch_size = [64, 64, 16]
@@ -53,32 +54,8 @@ for img_count in range(0, 5):
     image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
     images.append(np.array(image))
 
-
-i = 4
-# print(centers[i])
-# plt.imshow(images[i][...,20])
-# plt.show()
-# plt.imshow(label_maps[i][...,20])
-# plt.show()
-
-hamed = images[i][:,::-1,:]
-shapan = label_maps[i][:, ::-1, :]
-
-centers[i,0] = 149
-centers[i,1] = 227
-shapan1 = np.zeros((images[i].shape[0], images[i].shape[1]))
-shapan1[centers[i,0],centers[i,1]] = 1;
-shapan1[139, 127] = 1;
-
-plt.imshow(shapan1)
-plt.show()
-x, y = rotate(centers[i, 0], centers[i, 1], images[i].shape[0] / 2, images[i].shape[1] / 2,
-                   (-145 / 180) * math.pi)
-
-print(images[i].shape[0] / 2, images[i].shape[1] / 2)
-print(x,y)
-shapan1[x,y] = 1;
-plt.imshow(shapan1)
-plt.show()
+    hamed = scipy.ndimage.interpolation.zoom(image,0.5)
+    print('original   ', image.shape)
+    print('zoomed   ', hamed.shape)
 
 

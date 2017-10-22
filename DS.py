@@ -58,6 +58,14 @@ class DS:
             self.train_indexes.append(train_index)
             self.test_indexes.append(test_index)
 
+    def augment_zoom_out(self, count, images, label_maps, centers):
+        print('DS - augmenting_zoom out')
+        for i in range(0, count):
+            # print('DS - zoom - image : ', i)
+            images.append(scipy.ndimage.interpolation.zoom(images[i], 0.5))
+            label_maps.append(scipy.ndimage.interpolation.zoom(label_maps[i], 0.5))
+            centers.append([centers[i][0], centers[i][1], centers[i][2]])
+
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
         for i in range(0, count):
@@ -71,7 +79,7 @@ class DS:
     def augment_flip(self, count, images, label_maps, centers):
         print('DS - augmenting__fliping')
         for i in range(0, count):
-            print('DS - fliping - image : ', i)
+            # print('DS - fliping - image : ', i)
             images.append(images[i][:, ::-1, :])
             label_maps.append(label_maps[i][:, ::-1, :])
             x, y = [centers[i][0], images[i].shape[1] - centers[i][1]]
