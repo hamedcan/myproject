@@ -119,7 +119,7 @@ class DS:
         # ================================rotation=========================================
         train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
         # ==================================flip===========================================
-        train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
+        # train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
             image = train_image[i]
