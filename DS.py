@@ -9,12 +9,13 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, K=5, angles=[]):
+    def __init__(self, path, patch_size, K=5, angles=[], scales=[]):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
         self.K = K
         self.angles = angles
+        self.scales = scales
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -116,11 +117,11 @@ class DS:
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
         # ================================zoom out=========================================
-        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, [0.5, 2])
+        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
         # ================================rotation=========================================
         train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
         # ==================================flip===========================================
-        # train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
+        train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
             image = train_image[i]

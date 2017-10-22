@@ -6,12 +6,13 @@ from matplotlib import pyplot as plt
 from DS import DS
 
 # initialization and prepare data set#########################################################
-patch_size = [128, 128, 32]
+patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 1000
+epochs = 100
 K = 5
 angles = [90, 180, 270]
-ds = DS('.\data\\', patch_size, K, angles)
+scales = [0.5]
+ds = DS('.\data\\', patch_size, K, angles, scales)
 
 for fold in range(0,K):
     print('===================================================================================================',fold)
