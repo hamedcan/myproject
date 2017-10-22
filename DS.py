@@ -48,7 +48,7 @@ class DS:
             label_map = np.reshape(label_map, (label_map.shape[0], label_map.shape[1], label_map.shape[2]))
             self.label_maps.append(np.array(label_map))
 
-            image = scipy.io.loadmat('.\data\eenhanced_' + volname + '.mat')
+            image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             self.images.append(np.array(image))
@@ -58,13 +58,13 @@ class DS:
             self.train_indexes.append(train_index)
             self.test_indexes.append(test_index)
 
-    def augment_zoom_out(self, count, images, label_maps, centers):
-        print('DS - augmenting_zoom out')
+    def augment_zoom_out(self, count, images, label_maps, centers, scale):
+        print('DS - augmenting_zoom by scale: ', str(scale))
         for i in range(0, count):
             # print('DS - zoom - image : ', i)
-            images.append(scipy.ndimage.interpolation.zoom(images[i], 0.5))
-            label_maps.append(scipy.ndimage.interpolation.zoom(label_maps[i], 0.5))
-            centers.append([centers[i][0], centers[i][1], centers[i][2]])
+            images.append(scipy.ndimage.interpolation.zoom(images[i], scale))
+            label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], scale)))
+            centers.append([round(centers[i][0]*scale), round(centers[i][1]*scale), round(centers[i][2]*scale)])
 
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
@@ -112,14 +112,14 @@ class DS:
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
         # ================================zoom out=========================================
-        self.augment_zoom_out(train_count, train_image, train_label_map, train_center)
+        self.augment_zoom_out(train_count, train_image, train_label_map, train_center, 0.5)
         train_count *= 2
         # ================================rotation=========================================
-        self.augment_rotation(train_count, train_image, train_label_map, train_center)
-        train_count *= (len(self.angles) + 1)
+        # self.augment_rotation(train_count, train_image, train_label_map, train_center)
+        # train_count *= (len(self.angles) + 1)
         # ==================================flip===========================================
-        self.augment_flip(train_count, train_image, train_label_map, train_center)
-        train_count *= 2
+        # self.augment_flip(train_count, train_image, train_label_map, train_center)
+        # train_count *= 2
         # ======================================================================================================
         for i in range(0, train_count):
             image = train_image[i]

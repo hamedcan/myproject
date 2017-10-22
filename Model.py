@@ -4,7 +4,7 @@ from keras.engine import Input, Model
 from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, BatchNormalization
 from keras import optimizers, initializers
 from keras.layers.merge import concatenate
-from keras_contrib.layers import Deconvolution3D
+# from keras_contrib.layers import Deconvolution3D
 
 def get_model(input_shape, pool_size=(2, 2, 2), n_labels=1, initial_learning_rate=0.00001, deconvolution=True, downsize_filters_factor=2):
     """
