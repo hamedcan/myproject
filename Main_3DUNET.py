@@ -8,7 +8,7 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 200
+epochs = 1000
 K = 5
 angles = [90, 180, 270]
 ds = DS('.\data\\', patch_size, K, angles)
