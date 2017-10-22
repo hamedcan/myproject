@@ -58,14 +58,15 @@ class DS:
             self.train_indexes.append(train_index)
             self.test_indexes.append(test_index)
 
-    def augment_zoom_out(self, count, images, label_maps, centers, scale):
-        print('DS - augmenting_zoom by scale: ', str(scale))
-        for i in range(0, count):
-            # print('DS - zoom - image : ', i)
-            images.append(scipy.ndimage.interpolation.zoom(images[i], scale))
-            label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], scale)))
-            centers.append([round(centers[i][0]*scale), round(centers[i][1]*scale), round(centers[i][2]*scale)])
-        return count * 2
+    def augment_zoom(self, count, images, label_maps, centers, scale):
+        for j in scale:
+            print('DS - augmenting_zoom by scale: ', str(j))
+            for i in range(0, count):
+                # print('DS - zoom - image : ', i)
+                images.append(scipy.ndimage.interpolation.zoom(images[i], j))
+                label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j)))
+                centers.append([round(centers[i][0]*j), round(centers[i][1]*j), round(centers[i][2]*j)])
+        return count * (len(j) + 1)
 
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
@@ -115,7 +116,7 @@ class DS:
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
         # ================================zoom out=========================================
-        train_count = self.augment_zoom_out(train_count, train_image, train_label_map, train_center, 0.5)
+        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, [0.5, 2])
         # ================================rotation=========================================
         train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
         # ==================================flip===========================================

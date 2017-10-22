@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from DS import DS
 
 # initialization and prepare data set#########################################################
-patch_size = [64, 64, 16]
+patch_size = [128, 128, 32]
 batch_size = 16
 epochs = 1000
 K = 5
