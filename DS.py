@@ -181,7 +181,7 @@ class DS:
     def create_files(K, R, g_path):
         for k in range(0, K):
             for r in range(0, R):
-                path = g_path + r'\fold-' + str(k) + r'rep-' + str(r)
+                path = g_path + r'\fold-' + str(k) + r'-rep-' + str(r)
                 if not os.path.exists(path):
                     os.makedirs(path)
 
