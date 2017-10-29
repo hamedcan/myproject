@@ -8,8 +8,8 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 1
-repeat = 2
+epochs = 100
+repeat = 5
 K = 5
 angles = [90, 180, 270]
 scales = [0.5]
@@ -37,10 +37,10 @@ for fold in range(0,K):
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
         train_label_prediction = model.predict(x_train)
-        logger.write('test accuracy: ' + str(model.evaluate(x_test, y_test)[1]) + '\n')
-        print(model.evaluate(x_test, y_test))
-        logger.write('train accuracy: ' + str(model.evaluate(x_train, y_train)[1]) + '\n\n')
         test_label_prediction = model.predict(x_test)
+
+        logger.write('train accuracy: ' + str(model.evaluate(x_train, y_train)[1]) + '\n')
+        logger.write('test accuracy: ' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         # save images to file#######################################################################
         image = np.zeros([patch_size[0], patch_size[1], 3])
         logger.flush()
