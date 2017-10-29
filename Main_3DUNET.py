@@ -8,10 +8,10 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 100
+epochs = 200
 repeat = 5
 K = 5
-angles = [90, 180, 270]
+angles = []
 scales = [0.5]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
@@ -30,6 +30,7 @@ for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
+        model.reset_states()
         logger.write('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
         # train model##################################################################################
