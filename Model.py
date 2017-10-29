@@ -1,12 +1,12 @@
 import numpy as np
 from keras import backend as K
 from keras.engine import Input, Model
-from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, BatchNormalization
+from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Dropout, BatchNormalization
 from keras import optimizers, initializers
 from keras.layers.merge import concatenate
 # from keras_contrib.layers import Deconvolution3D
 
-def get_model(input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1, initial_learning_rate=0.00001, deconvolution=True, downsize_filters_factor=1):
+def get_model(input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1, initial_learning_rate=0.00001, deconvolution=True, downsize_filters_factor=2, drop_rate=0.0):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -26,19 +26,22 @@ def get_model(input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=
     print('pool size: ', pool_size)
     print('deconvolution: ', deconvolution)
 
-    initer = initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
-
+    # initer = initializers.TruncatedNormal(mean=0.0, stddev=0.05, seed=None)
+    initer = initializers.lecun_normal();
     inputs = Input(input_shape)
     conv1 = Conv3D(int(32 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(inputs)
     conv1 = Conv3D(int(64 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(conv1)
+    conv1 = Dropout(drop_rate)(conv1)
     pool1 = MaxPooling3D(pool_size=pool_size, strides=2)(conv1)
 
     conv2 = Conv3D(int(64 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(pool1)
     conv2 = Conv3D(int(128 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(conv2)
+    conv2 = Dropout(drop_rate)(conv2)
     pool2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv2)
 
     conv3 = Conv3D(int(128 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(pool2)
     conv3 = Conv3D(int(256 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(conv3)
+    conv3 = Dropout(drop_rate)(conv3)
     pool3 = MaxPooling3D(pool_size=pool_size, strides=2)(conv3)
 
     conv4 = Conv3D(int(256 / downsize_filters_factor), filter_size, activation='relu', padding='same', kernel_initializer=initer)(pool3)
