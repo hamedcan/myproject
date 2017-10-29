@@ -3,6 +3,7 @@ from __future__ import print_function
 import numpy as np
 import math
 import scipy.io
+import os
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 from xlrd import open_workbook
@@ -175,3 +176,20 @@ class DS:
         y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
         return x_train, y_train, x_test, y_test
+
+    @staticmethod
+    def create_files(K, R, g_path):
+        for k in range(0, K):
+            for r in range(0, R):
+                path = g_path + r'\fold-' + str(k) + r'rep-' + str(r)
+                if not os.path.exists(path):
+                    os.makedirs(path)
+
+                if not os.path.exists(path + r'\train'):
+                    os.makedirs(path + r'\train')
+
+                if not os.path.exists(path + r'\test'):
+                    os.makedirs(path + r'\test')
+
+        open(g_path + '\info.txt', "w+").close()
+        return open(g_path + '\info.txt', "w+")
