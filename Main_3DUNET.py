@@ -17,7 +17,6 @@ g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
 logger = ds.create_files(K, repeat, g_path)
-model = Model.get_model(logger, input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
 logger.write('batch size: ' + str(batch_size) + '\n')
 logger.write('epochs: ' + str(epochs) + '\n')
 logger.write('repeat: ' + str(repeat) + '\n')
@@ -30,7 +29,7 @@ for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        model.reset_states()
+        model = Model.get_model(logger, fold*repeat_count ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
         logger.write('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
         # train model##################################################################################

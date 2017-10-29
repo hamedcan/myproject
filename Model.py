@@ -6,7 +6,7 @@ from keras import optimizers, initializers
 from keras.layers.merge import concatenate
 # from keras_contrib.layers import Deconvolution3D
 
-def get_model(logger, input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1, initial_learning_rate=0.00001, deconvolution=True, drop_rate=0.0):
+def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1, initial_learning_rate=0.00001, deconvolution=True, drop_rate=0.0):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -18,13 +18,13 @@ def get_model(logger, input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n
     increases the amount memory required during training.
     :return: Untrained 3D UNet Model
     """
-
-    logger.write('=============:model parameters:=============\n')
-    logger.write('patch size: ' + str(input_shape) + '\n')
-    logger.write('learning rate: ' + str(initial_learning_rate) + '\n')
-    logger.write('pool size: ' + str(pool_size) + '\n')
-    logger.write('filter size: ' + str( filter_size) + '\n')
-    logger.write('deconvolution: ' + str( deconvolution) + '\n')
+    if log_disable==0:
+        logger.write('=============:model parameters:=============\n')
+        logger.write('patch size: ' + str(input_shape) + '\n')
+        logger.write('learning rate: ' + str(initial_learning_rate) + '\n')
+        logger.write('pool size: ' + str(pool_size) + '\n')
+        logger.write('filter size: ' + str( filter_size) + '\n')
+        logger.write('deconvolution: ' + str( deconvolution) + '\n')
 
     inputs = Input(input_shape)
     conv1 = Conv3D(16, filter_size, activation='relu', padding='same')(inputs)
