@@ -192,4 +192,4 @@ class DS:
                     os.makedirs(path + r'\test')
 
         open(g_path + '\info.txt', "w+").close()
-        return open(g_path + '\info.txt', "w+")
+        return open(g_path + '\info.txt', "a")
