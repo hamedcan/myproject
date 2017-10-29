@@ -14,7 +14,7 @@ repeat = 5
 K = 5
 angles = [90, 180, 270]
 scales = [0.5]
-g_path = r'C:\result-' + datetime.now().strftime('%Y-%m-%d--%H-%M')
+g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
 model = Model.get_model(input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
