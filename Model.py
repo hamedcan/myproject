@@ -18,7 +18,7 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
     increases the amount memory required during training.
     :return: Untrained 3D UNet Model
     """
-    if log_disable==0:
+    if log_disable == 0:
         logger.write('=============:model parameters:=============\n')
         logger.write('patch size: ' + str(input_shape) + '\n')
         logger.write('learning rate: ' + str(initial_learning_rate) + '\n')

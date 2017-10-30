@@ -8,11 +8,11 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 200
+epochs = 2
 repeat = 5
 K = 5
 angles = []
-scales = [0.5]
+scales = []
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
@@ -28,9 +28,12 @@ logger.flush()
 for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
+    print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        model = Model.get_model(logger, fold*repeat_count ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+        disable_count = fold + repeat_count
+        model = Model.get_model(logger ,disable_count ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
         logger.write('repeat: ' + str(repeat_count) + '\n')
+        print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
         # train model##################################################################################
         model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_data=(x_test, y_test))
