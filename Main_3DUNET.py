@@ -8,8 +8,8 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 200
-repeat = 3
+epochs = 100
+repeat = 5
 K = 5
 angles = []
 scales = [0.5, 0.25]

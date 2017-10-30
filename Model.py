@@ -21,7 +21,6 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
     if log_disable == 0:
         logger.write('=============:model parameters:=============\n')
         logger.write('patch size: ' + str(input_shape) + '\n')
-        logger.write('learning rate: ' + str(initial_learning_rate) + '\n')
         logger.write('pool size: ' + str(pool_size) + '\n')
         logger.write('filter size: ' + str( filter_size) + '\n')
         logger.write('deconvolution: ' + str( deconvolution) + '\n')
