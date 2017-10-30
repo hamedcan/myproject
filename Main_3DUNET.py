@@ -8,7 +8,7 @@ from DS import DS
 # initialization and prepare data set#########################################################
 patch_size = [64, 64, 16]
 batch_size = 16
-epochs = 2
+epochs = 1
 repeat = 5
 K = 5
 angles = []
@@ -17,6 +17,7 @@ g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
 logger = ds.create_files(K, repeat, g_path)
+model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
 logger.write('batch size: ' + str(batch_size) + '\n')
 logger.write('epochs: ' + str(epochs) + '\n')
 logger.write('repeat: ' + str(repeat) + '\n')
@@ -30,8 +31,7 @@ for fold in range(0,K):
     logger.write('===================fold: ' + str(fold) + '===================\n')
     print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        disable_count = fold + repeat_count
-        model = Model.get_model(logger ,disable_count ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
         logger.write('repeat: ' + str(repeat_count) + '\n')
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
@@ -42,8 +42,8 @@ for fold in range(0,K):
         train_label_prediction = model.predict(x_train)
         test_label_prediction = model.predict(x_test)
 
-        logger.write('train accuracy: ' + str(model.evaluate(x_train, y_train)[1]) + '\n')
-        logger.write('test accuracy: ' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
+        logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
+        logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         # save images to file#######################################################################
         image = np.zeros([patch_size[0], patch_size[1], 3])
         logger.flush()
