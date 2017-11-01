@@ -94,7 +94,7 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
-    adam = optimizers.Adam()
+    adam = optimizers.Adam(lr=0.001)
 
     model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef, 'acc'])
     return model
