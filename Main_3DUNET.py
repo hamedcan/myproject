@@ -29,7 +29,7 @@ logger.flush()
 for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
-    logger.write('contain:' + str(ds.train_indexes[fold]))
+    logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
         model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
