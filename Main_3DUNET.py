@@ -1,5 +1,5 @@
 from __future__ import print_function
-import Model_3Dunet as Model
+import Model_Vnet as Model
 import numpy as np
 from datetime import datetime
 from matplotlib import pyplot as plt
