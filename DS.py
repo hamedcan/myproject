@@ -50,7 +50,7 @@ class DS:
             label_map = np.reshape(label_map, (label_map.shape[0], label_map.shape[1], label_map.shape[2]))
             self.label_maps.append(np.array(label_map))
 
-            image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
+            image = scipy.io.loadmat('.\data\eenhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             self.images.append(np.array(image))
