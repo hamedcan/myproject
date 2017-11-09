@@ -12,7 +12,7 @@ epochs = 100
 repeat = 5
 K = 5
 angles = []
-scales = [0.5, 0.25]
+scales = []
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
