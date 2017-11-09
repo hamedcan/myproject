@@ -12,7 +12,7 @@ epochs = 100
 repeat = 5
 K = 5
 angles = []
-scales = []
+scales = [0.5, 0.25]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
@@ -48,12 +48,12 @@ for fold in range(0,K):
         # save images to file#######################################################################
         image = np.zeros([patch_size[0], patch_size[1], 3])
         logger.flush()
-        for i in range(0, x_train.shape[0]):
-            for j in range(0, patch_size[2]):
-                image[:, :, 0] = x_train[i, :, :, j, 0] + (train_label_prediction[i, :, :, j, 0] / 4)  # red for predicted by model
-                image[:, :, 1] = x_train[i, :, :, j, 0] + (y_train[i, :, :, j, 0]/4)  # green for ground truth
-                image[:, :, 2] = x_train[i, :, :, j, 0]
-                plt.imsave(path + r'\train' + '\im-' + str(i) + '-' + str(j) + '.png', image)
+        # for i in range(0, x_train.shape[0]):
+        #     for j in range(0, patch_size[2]):
+        #         image[:, :, 0] = x_train[i, :, :, j, 0] + (train_label_prediction[i, :, :, j, 0] / 4)  # red for predicted by model
+        #         image[:, :, 1] = x_train[i, :, :, j, 0] + (y_train[i, :, :, j, 0]/4)  # green for ground truth
+        #         image[:, :, 2] = x_train[i, :, :, j, 0]
+        #         plt.imsave(path + r'\train' + '\im-' + str(i) + '-' + str(j) + '.png', image)
 
         for i in range(0, x_test.shape[0]):
             for j in range(0, patch_size[2]):

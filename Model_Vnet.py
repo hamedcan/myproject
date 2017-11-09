@@ -5,7 +5,7 @@ from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Dropout
 from keras import optimizers
 from keras.layers.merge import concatenate
 
-def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1, deconvolution=True, drop_rate=0.0):
+def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -22,29 +22,24 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
         logger.write('patch size: ' + str(input_shape) + '\n')
         logger.write('pool size: ' + str(pool_size) + '\n')
         logger.write('filter size: ' + str( filter_size) + '\n')
-        logger.write('deconvolution: ' + str( deconvolution) + '\n')
-        logger.write('Drop out rate: ' + str(drop_rate) + '\n')
 
     inputs = Input(input_shape)
     conv1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs)
     conv1 = BatchNormalization()(conv1)
     conv1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1)
     conv1 = BatchNormalization()(conv1)
-    conv1 = Dropout(drop_rate)(conv1)
     pool1 = Conv3D(32, filter_size, strides=(2,2,2), padding='same', activation='relu')(conv1)
 
     conv2 = Conv3D(32, filter_size, padding='same', activation='relu')(pool1)
     conv2 = BatchNormalization()(conv2)
     conv2 = Conv3D(64, filter_size, padding='same', activation='relu')(conv2)
     conv2 = BatchNormalization()(conv2)
-    conv2 = Dropout(drop_rate)(conv2)
     pool2 = Conv3D(64, filter_size, strides=(2,2,2), padding='same', activation='relu')(conv2)
 
     conv3 = Conv3D(64, filter_size, padding='same', activation='relu')(pool2)
     conv3 = BatchNormalization()(conv3)
     conv3 = Conv3D(128, filter_size, padding='same', activation='relu')(conv3)
     conv3 = BatchNormalization()(conv3)
-    conv3 = Dropout(drop_rate)(conv3)
     pool3 = Conv3D(128, filter_size, strides=(2,2,2), padding='same', activation='relu')(conv3)
 
     conv4 = Conv3D(128, filter_size, padding='same', activation='relu')(pool3)
@@ -96,20 +91,3 @@ def dice_coef(y_true, y_pred, smooth=1.):
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
-
-
-def compute_level_output_shape(filters, depth, pool_size, image_shape):
-    """
-    Each level has a particular output shape based on the number of filters used in that level and the depth or number
-    of max pooling operations that have been done on the data at that point.
-    :param image_shape: shape of the 3d image.
-    :param pool_size: the pool_size parameter used in the max pooling operation.
-    :param filters: Number of filters used by the last node in a given level.
-    :param depth: The number of levels down in the U-shaped model a given node is.
-    :return: 5D vector of the shape of the output node
-    """
-    if depth != 0:
-        output_image_shape = np.divide(image_shape, np.multiply(pool_size, depth)).tolist()
-    else:
-        output_image_shape = image_shape
-    return tuple([None, filters] + [int(x) for x in output_image_shape])
