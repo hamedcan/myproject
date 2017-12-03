@@ -4,7 +4,7 @@ from keras.engine import Input, Model
 from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization
 from keras import optimizers
 from keras.layers.merge import concatenate
-# from keras_contrib.layers import Deconvolution3D
+from Initializer import *
 
 def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1):
     """
@@ -25,7 +25,7 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
         logger.write('filter size: ' + str( filter_size) + '\n')
 
     inputs = Input(input_shape)
-    conv1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs)
+    conv1 = Conv3D(16, filter_size, padding='same', activation='relu', kernel_initializer=my_init)(inputs)
     conv1 = BatchNormalization()(conv1)
     conv1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1)
     conv1 = BatchNormalization()(conv1)
