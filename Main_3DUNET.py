@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 from matplotlib import pyplot as plt
 from DS import DS
+from Init_data import InitData
 
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
@@ -25,6 +26,9 @@ logger.write('fold: ' + str(K) + '\n')
 logger.write('angles: ' + str(angles) + '\n')
 logger.write('scales: ' + str(scales) + '\n')
 logger.flush()
+
+init_data = InitData.__call__()
+init_data.initilize
 
 for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)

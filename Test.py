@@ -1,5 +1,5 @@
 from Init_data import InitData
+import Initializer
 
-init_data = InitData()
-init_data.initilize()
-tao_method()
+Initializer.tao_method(3)
+pass

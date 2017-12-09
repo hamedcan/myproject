@@ -1,17 +1,27 @@
+import random
+
 import numpy as np
 import math
 import scipy.io
 from xlrd import open_workbook
 
+class Singleton(type):
+    _instances = {}
+    def __call__(cls):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__()
+        return cls._instances[cls]
 
-class InitData:
+class InitData(metaclass=Singleton):
     path = '.\data\\'
     label_maps = []
     images = []
     centers = []
     count = 0
 
-    def initilize(self):
+
+    def __init__(self):
+        self.hamed = 'salam'
         print('Weight Initialize - loading')
         wb = open_workbook(self.path + 'data.xlsx')
         for s in wb.sheets():
@@ -35,4 +45,20 @@ class InitData:
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             self.images.append(np.array(image))
+
+    def get(self):
+        size = 1
+        img_number = random.randint(1,51)
+        label_map = self.label_maps.pop(img_number)
+        image = self.images.pop(img_number)
+        voxel_count = np.count_nonzero(label_map)
+        voxel_number = random.randint(0,voxel_count)
+        v_idx_x = np.nonzero(label_map)[0][voxel_number]
+        v_idx_y = np.nonzero(label_map)[1][voxel_number]
+        v_idx_z = np.nonzero(label_map)[2][voxel_number]
+        return image[v_idx_x-size:v_idx_x+size,v_idx_y-size:v_idx_y+size,v_idx_z-size:v_idx_z+size]
+
+
+
+
 
