@@ -56,7 +56,8 @@ class InitData(metaclass=Singleton):
         v_idx_x = np.nonzero(label_map)[0][voxel_number]
         v_idx_y = np.nonzero(label_map)[1][voxel_number]
         v_idx_z = np.nonzero(label_map)[2][voxel_number]
-        return image[v_idx_x-size:v_idx_x+size,v_idx_y-size:v_idx_y+size,v_idx_z-size:v_idx_z+size]
+        hamedd =  image[v_idx_x-size:v_idx_x+size+1,v_idx_y-size:v_idx_y+size+1,v_idx_z-size:v_idx_z+size+1]
+        pass
 
 
 
