@@ -21,7 +21,6 @@ class InitData(metaclass=Singleton):
 
 
     def __init__(self):
-        self.hamed = 'salam'
         print('Weight Initialize - loading')
         wb = open_workbook(self.path + 'data.xlsx')
         for s in wb.sheets():
@@ -56,8 +55,7 @@ class InitData(metaclass=Singleton):
         v_idx_x = np.nonzero(label_map)[0][voxel_number]
         v_idx_y = np.nonzero(label_map)[1][voxel_number]
         v_idx_z = np.nonzero(label_map)[2][voxel_number]
-        hamedd =  image[v_idx_x-size:v_idx_x+size+1,v_idx_y-size:v_idx_y+size+1,v_idx_z-size:v_idx_z+size+1]
-        pass
+        return image[v_idx_x-size:v_idx_x+size+1,v_idx_y-size:v_idx_y+size+1,v_idx_z-size:v_idx_z+size+1]
 
 
 
