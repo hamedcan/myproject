@@ -103,5 +103,5 @@ def dice_coef_loss(y_true, y_pred):
 
 def tao_method(shape, dtype='float32'):
     data = InitData.__call__()
-    print("initializing with size: " + shape)
+    print("initializing with size: " + str(shape))
     return tf.convert_to_tensor(np.array(data.get(shape[3], shape[4])), dtype=dtype)
