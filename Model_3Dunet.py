@@ -6,7 +6,9 @@ from keras import optimizers
 from keras.layers.merge import concatenate
 import tensorflow as tf
 from Init_data import InitData
-def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1):
+
+
+def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1):
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -22,7 +24,7 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
         logger.write('=============:model parameters:=============\n')
         logger.write('patch size: ' + str(input_shape) + '\n')
         logger.write('pool size: ' + str(pool_size) + '\n')
-        logger.write('filter size: ' + str( filter_size) + '\n')
+        logger.write('filter size: ' + str(filter_size) + '\n')
 
     inputs = Input(input_shape)
     conv1 = Conv3D(16, filter_size, padding='same', activation='relu', kernel_initializer=tao_method)(inputs)
@@ -78,14 +80,13 @@ def get_model(logger, log_disable ,input_shape, pool_size=(2, 2, 2), filter_size
     conv7 = Conv3D(32, filter_size, padding='same', activation='relu', kernel_initializer=tao_method)(conv7)
     conv7 = BatchNormalization()(conv7)
 
-
     conv8 = Conv3D(n_labels, (1, 1, 1))(conv7)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
     adam = optimizers.Adam(lr=0.001)
 
-    model.compile(optimizer=adam, loss=dice_coef_loss , metrics=[dice_coef, 'acc'])
+    model.compile(optimizer=adam, loss=dice_coef_loss, metrics=[dice_coef, 'acc'])
     return model
 
 
@@ -102,4 +103,5 @@ def dice_coef_loss(y_true, y_pred):
 
 def tao_method(shape, dtype='float32'):
     data = InitData.__call__()
-    return tf.convert_to_tensor(np.array(data.get(shape[3],shape[4])), dtype=dtype)
+    print("initializing with size: " + shape)
+    return tf.convert_to_tensor(np.array(data.get(shape[3], shape[4])), dtype=dtype)
