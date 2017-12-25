@@ -5,12 +5,15 @@ import math
 import scipy.io
 from xlrd import open_workbook
 
+
 class Singleton(type):
     _instances = {}
+
     def __call__(cls):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__()
         return cls._instances[cls]
+
 
 class InitData(metaclass=Singleton):
     path = '.\data\\'
@@ -18,7 +21,6 @@ class InitData(metaclass=Singleton):
     images = []
     centers = []
     count = 0
-
 
     def __init__(self):
         print('Weight Initialize - loading')
@@ -32,7 +34,6 @@ class InitData(metaclass=Singleton):
             self.count = nrows
 
         for img_count in range(0, self.count):
-
             volname = file_name[img_count]
 
             label_map = scipy.io.loadmat('.\data\gtruth_' + volname + '_perim.mat')
@@ -45,19 +46,21 @@ class InitData(metaclass=Singleton):
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             self.images.append(np.array(image))
 
-    def get(self):
+    def get(self, channel_count, filter_count):
         size = 1
-        img_number = random.randint(1,51)
-        label_map = self.label_maps.pop(img_number)
-        image = self.images.pop(img_number)
-        voxel_count = np.count_nonzero(label_map)
-        voxel_number = random.randint(0,voxel_count)
-        v_idx_x = np.nonzero(label_map)[0][voxel_number]
-        v_idx_y = np.nonzero(label_map)[1][voxel_number]
-        v_idx_z = np.nonzero(label_map)[2][voxel_number]
-        return image[v_idx_x-size:v_idx_x+size+1,v_idx_y-size:v_idx_y+size+1,v_idx_z-size:v_idx_z+size+1]
+        result = np.zeros((3, 3, 3, channel_count, filter_count));
 
+        for i in range(0, channel_count):
+            for j in range(0, filter_count):
+                img_number = random.randint(0, len(self.label_maps)-1);
+                label_map = self.label_maps[img_number]
+                image = self.images[img_number]
+                voxel_count = np.count_nonzero(label_map)
+                voxel_number = random.randint(0, voxel_count - 1)
+                v_idx_x = np.nonzero(label_map)[0][voxel_number]
+                v_idx_y = np.nonzero(label_map)[1][voxel_number]
+                v_idx_z = np.nonzero(label_map)[2][voxel_number]
+                result[:, :, :, i, j] = image[v_idx_x - size:v_idx_x + size + 1, v_idx_y - size:v_idx_y + size + 1,
+                                     v_idx_z - size:v_idx_z + size + 1]
 
-
-
-
+        return result
