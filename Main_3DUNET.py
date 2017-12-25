@@ -28,7 +28,6 @@ logger.write('scales: ' + str(scales) + '\n')
 logger.flush()
 
 init_data = InitData.__call__()
-init_data.initilize
 
 for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)

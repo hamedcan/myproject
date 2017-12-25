@@ -21,8 +21,10 @@ class InitData(metaclass=Singleton):
     images = []
     centers = []
     count = 0
+    data = []
 
     def __init__(self):
+        size = 1
         print('Weight Initialize - loading')
         wb = open_workbook(self.path + 'data.xlsx')
         for s in wb.sheets():
@@ -46,21 +48,19 @@ class InitData(metaclass=Singleton):
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             self.images.append(np.array(image))
 
-    def get(self, channel_count, filter_count):
-        size = 1
-        result = np.zeros((3, 3, 3, channel_count, filter_count));
+            nz = np.nonzero(label_map)
+            for voxel_number in (0, np.count_nonzero(label_map) - 1):
+                v_idx_x = nz[0][voxel_number]
+                v_idx_y = nz[1][voxel_number]
+                v_idx_z = nz[2][voxel_number]
+                self.data.append(image[v_idx_x - size:v_idx_x + size + 1, v_idx_y - size:v_idx_y + size + 1,
+                                 v_idx_z - size:v_idx_z + size + 1])
 
+    def get(self, channel_count, filter_count):
+        result = np.zeros((3, 3, 3, channel_count, filter_count));
         for i in range(0, channel_count):
             for j in range(0, filter_count):
-                img_number = random.randint(0, len(self.label_maps)-1);
-                label_map = self.label_maps[img_number]
-                image = self.images[img_number]
-                voxel_count = np.count_nonzero(label_map)
-                voxel_number = random.randint(0, voxel_count - 1)
-                v_idx_x = np.nonzero(label_map)[0][voxel_number]
-                v_idx_y = np.nonzero(label_map)[1][voxel_number]
-                v_idx_z = np.nonzero(label_map)[2][voxel_number]
-                result[:, :, :, i, j] = image[v_idx_x - size:v_idx_x + size + 1, v_idx_y - size:v_idx_y + size + 1,
-                                     v_idx_z - size:v_idx_z + size + 1]
+                print(str(i) + "---" + str(j))
+                result[:, :, :, i, j] = self.data[random.randint(0, len(self.data) - 1)]
 
         return result
