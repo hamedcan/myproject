@@ -17,8 +17,6 @@ class Singleton(type):
 
 class InitData(metaclass=Singleton):
     path = '.\data\\'
-    label_maps = []
-    images = []
     centers = []
     count = 0
     data = []
@@ -41,15 +39,14 @@ class InitData(metaclass=Singleton):
             label_map = scipy.io.loadmat('.\data\gtruth_' + volname + '_perim.mat')
             label_map = label_map['gtruth_perim']
             label_map = np.reshape(label_map, (label_map.shape[0], label_map.shape[1], label_map.shape[2]))
-            self.label_maps.append(np.array(label_map))
 
             image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
-            self.images.append(np.array(image))
 
             nz = np.nonzero(label_map)
-            for voxel_number in (0, np.count_nonzero(label_map) - 1):
+
+            for voxel_number in range(0, np.count_nonzero(label_map) - 1):
                 v_idx_x = nz[0][voxel_number]
                 v_idx_y = nz[1][voxel_number]
                 v_idx_z = nz[2][voxel_number]
@@ -57,6 +54,7 @@ class InitData(metaclass=Singleton):
                                  v_idx_z - size:v_idx_z + size + 1])
 
     def get(self, channel_count, filter_count):
+        print(len(self.data))
         result = np.zeros((3, 3, 3, channel_count, filter_count));
         for i in range(0, channel_count):
             for j in range(0, filter_count):
