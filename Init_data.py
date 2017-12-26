@@ -54,7 +54,6 @@ class InitData(metaclass=Singleton):
                                  v_idx_z - size:v_idx_z + size + 1])
 
     def get(self, channel_count, filter_count):
-        print(len(self.data))
         result = np.zeros((3, 3, 3, channel_count, filter_count));
         for i in range(0, channel_count):
             for j in range(0, filter_count):
