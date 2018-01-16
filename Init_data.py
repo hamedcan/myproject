@@ -103,7 +103,6 @@ class InitData(metaclass=Singleton):
             image[:, :, i] = data
         return image
 
-
     def CLAHE3D(self, image):
         for i in range(0, image.shape[2]):
             data = image[:, :, i]
