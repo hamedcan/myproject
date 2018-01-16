@@ -43,10 +43,7 @@ class InitData(metaclass=Singleton):
             image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
-            # image = cv2.equalizeHist(image)
-            # image = self.gabour_filter(image)
-            cv2.imshow('image', image)
-            cv2.waitKey(0)
+            image = self.gabour3D(image)
 
             nz = np.nonzero(label_map)
 
@@ -63,15 +60,13 @@ class InitData(metaclass=Singleton):
             for j in range(0, filter_count):
                 print(str(i) + "---" + str(j))
                 result[:, :, :, i, j] = self.data[random.randint(0, len(self.data) - 1)]
-
-        print(result[:, :, :, 0, 0])
         return result
 
     def build_filters(self):
         filters = []
         ksize = 15
         for theta in np.arange(0, np.pi, np.pi / 16):
-            kern = cv2.getGaborKernel((ksize, ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+            kern = cv2.getGaborKernel((ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=cv2.CV_32F)
         kern /= 1.5 * kern.sum()
         filters.append(kern)
         return filters
@@ -80,6 +75,28 @@ class InitData(metaclass=Singleton):
         filters = self.build_filters()
         accum = np.zeros_like(img)
         for kern in filters:
-            fimg = cv2.filter3D(img, cv2.CV_8UC3, kern)
+            fimg = cv2.filter2D(img, cv2.CV_8UC3, kern)
         np.maximum(accum, fimg, accum)
         return accum
+
+    def gabour3D(self, image):
+        for i in range(0, image.shape[2]):
+            data = image[:, :, i]
+            data *= 255
+            data = data.astype(np.uint8)
+            data = self.gabour_filter(data)
+            data = data.astype(np.float64)
+            data /= 255
+            image[:, :, i] = data
+        return image
+
+    def eqhist3D(self, image):
+        for i in range(0, image.shape[2]):
+            data = image[:, :, i]
+            data *= 255
+            data = data.astype(np.uint8)
+            data = cv2.equalizeHist(data)
+            data = data.astype(np.float64)
+            data /= 255
+            image[:, :, i] = data
+        return image
