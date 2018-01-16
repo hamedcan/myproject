@@ -1,5 +1,5 @@
 import random
-
+import cv2
 import numpy as np
 import math
 import scipy.io
@@ -43,6 +43,10 @@ class InitData(metaclass=Singleton):
             image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
+            # image = cv2.equalizeHist(image)
+            # image = self.gabour_filter(image)
+            cv2.imshow('image', image)
+            cv2.waitKey(0)
 
             nz = np.nonzero(label_map)
 
@@ -60,4 +64,22 @@ class InitData(metaclass=Singleton):
                 print(str(i) + "---" + str(j))
                 result[:, :, :, i, j] = self.data[random.randint(0, len(self.data) - 1)]
 
+        print(result[:, :, :, 0, 0])
         return result
+
+    def build_filters(self):
+        filters = []
+        ksize = 15
+        for theta in np.arange(0, np.pi, np.pi / 16):
+            kern = cv2.getGaborKernel((ksize, ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+        kern /= 1.5 * kern.sum()
+        filters.append(kern)
+        return filters
+
+    def gabour_filter(self, img):
+        filters = self.build_filters()
+        accum = np.zeros_like(img)
+        for kern in filters:
+            fimg = cv2.filter3D(img, cv2.CV_8UC3, kern)
+        np.maximum(accum, fimg, accum)
+        return accum
