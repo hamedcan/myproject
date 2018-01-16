@@ -43,7 +43,9 @@ class InitData(metaclass=Singleton):
             image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
-            image = self.gabour3D(image)
+            # image = self.CLAHE3D(image)
+            # image = self.eqhist3D(image)
+            # image = self.gabour3D(image)
 
             nz = np.nonzero(label_map)
 
@@ -100,3 +102,18 @@ class InitData(metaclass=Singleton):
             data /= 255
             image[:, :, i] = data
         return image
+
+
+    def CLAHE3D(self, image):
+        for i in range(0, image.shape[2]):
+            data = image[:, :, i]
+            data *= 255
+            data = data.astype(np.uint8)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            data = clahe.apply(data)
+            data = data.astype(np.float64)
+            data /= 255
+            image[:, :, i] = data
+        return image
+
+
