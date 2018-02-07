@@ -10,7 +10,7 @@ from Init_data import InitData
 patch_size = [32, 32, 16]
 batch_size = 16
 epochs = 100
-repeat = 3
+repeat = 5
 K = 5
 angles = []
 scales = [0.5,0.25]
@@ -40,7 +40,7 @@ for fold in range(0,K):
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
         # train model##################################################################################
-        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_data=(x_test, y_test))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_data=(x_test, y_test), verbose=2)
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
         train_label_prediction = model.predict(x_train)

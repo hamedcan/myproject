@@ -27,9 +27,9 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
         logger.write('filter size: ' + str(filter_size) + '\n')
 
     inputs = Input(input_shape)
-    conv1 = Conv3D(16, filter_size, padding='same', activation='relu', kernel_initializer=tao_method)(inputs)
+    conv1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs)
     conv1 = BatchNormalization()(conv1)
-    conv1 = Conv3D(32, filter_size, padding='same', activation='relu', kernel_initializer=tao_method)(conv1)
+    conv1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1)
     conv1 = BatchNormalization()(conv1)
     pool1 = MaxPooling3D(pool_size=pool_size, strides=2)(conv1)
 

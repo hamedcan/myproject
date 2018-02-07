@@ -55,12 +55,13 @@ class InitData(metaclass=Singleton):
                 v_idx_z = nz[2][voxel_number]
                 self.data.append(image[v_idx_x - size:v_idx_x + size + 1, v_idx_y - size:v_idx_y + size + 1,
                                  v_idx_z - size:v_idx_z + size + 1])
+        print('Weight Initialize - data size: ' + str(len(self.data)))
 
     def get(self, channel_count, filter_count):
         result = np.zeros((3, 3, 3, channel_count, filter_count));
         for i in range(0, channel_count):
             for j in range(0, filter_count):
-                print(str(i) + "---" + str(j))
+                # print(str(i) + "---" + str(j))
                 result[:, :, :, i, j] = self.data[random.randint(0, len(self.data) - 1)]
         return result
 
