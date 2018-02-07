@@ -122,12 +122,15 @@ class DS:
             if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
                 train_image.append(self.images[i])
                 train_label_map.append(self.label_maps[i])
+                train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
             else:
                 train_image.append(scipy.ndimage.interpolation.zoom(self.images[i], 0.5))
                 train_label_map.append(np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)))
+                train_center.append([round(self.centers[i][0]*0.5), round(self.centers[i][1]*0.5), round(self.centers[i][2]*0.5)])
 
 
-            train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
+
+
         # ================================zoom out=========================================
         train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
         # ================================rotation=========================================
@@ -170,11 +173,12 @@ class DS:
             if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
                 image = self.images[i]
                 label_map = self.label_maps[i]
+                center = self.centers[i]
             else:
                 image = scipy.ndimage.interpolation.zoom(self.images[i], 0.5)
                 label_map = np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5))
+                center = [round(self.centers[i][0]*0.5), round(self.centers[i][1]*0.5), round(self.centers[i][2]*0.5)]
 
-            center = self.centers[i]
             ystart = max([center[0] - int(patch_size[0] / 2), 0])
             yend = min([center[0] + int(patch_size[0] / 2), image.shape[0]])
             xstart = max([center[1] - int(patch_size[1] / 2), 0])
