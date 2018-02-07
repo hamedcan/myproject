@@ -114,8 +114,19 @@ class DS:
         patch_size = self.patch_size
 
         for i in self.train_indexes[fold]:
-            train_image.append(self.images[i])
-            train_label_map.append(self.label_maps[i])
+            nz = np.nonzero(self.label_maps[i])
+            x = np.max(nz[0]) - np.min(nz[0])
+            y = np.max(nz[1]) - np.min(nz[1])
+            z = np.max(nz[2]) - np.min(nz[2])
+
+            if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
+                train_image.append(self.images[i])
+                train_label_map.append(self.label_maps[i])
+            else:
+                train_image.append(scipy.ndimage.interpolation.zoom(self.images[i], 0.5))
+                train_label_map.append(np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)))
+
+
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
         # ================================zoom out=========================================
         train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
@@ -149,10 +160,20 @@ class DS:
         x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
         y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
-        # ======================================================================================================
+        # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
-            image = self.images[i]
-            label_map = self.label_maps[i]
+            nz = np.nonzero(self.label_maps[i])
+            x = np.max(nz[0]) - np.min(nz[0])
+            y = np.max(nz[1]) - np.min(nz[1])
+            z = np.max(nz[2]) - np.min(nz[2])
+
+            if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
+                image = self.images[i]
+                label_map = self.label_maps[i]
+            else:
+                image = scipy.ndimage.interpolation.zoom(self.images[i], 0.5)
+                label_map = np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5))
+
             center = self.centers[i]
             ystart = max([center[0] - int(patch_size[0] / 2), 0])
             yend = min([center[0] + int(patch_size[0] / 2), image.shape[0]])
