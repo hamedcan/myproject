@@ -7,9 +7,9 @@ from DS import DS
 from Init_data import InitData
 
 # initialization and prepare data set#########################################################
-patch_size = [32, 32, 16]
+patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 100
+epochs = 500
 repeat = 5
 K = 5
 angles = []
