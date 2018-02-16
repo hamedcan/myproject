@@ -158,18 +158,22 @@ class DS:
         patch_size = self.patch_size
         image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+
         scales = [1, 0.5, 0.25]
         for i in (0,1,2):
-            ystart = int(max([center[0]*scales[i] - patch_size[0] / (2*scales[i]), 0]))
-            yend = int(min([center[0]*scales[i] + patch_size[0] / (2*scales[i]), image.shape[0]]))
-            xstart = int(max([center[1]*scales[i] - patch_size[1] / (2*scales[i]), 0]))
-            xend = int(min([center[1]*scales[i] + patch_size[1] / (2*scales[i]), image.shape[1]]))
-            zstart = int(max([center[2]*scales[i] - patch_size[2] / (2*scales[i]), 0]))
-            zend = int(min([center[2]*scales[i] + patch_size[2] / (2*scales[i]), image.shape[2]]))
 
-            image_tmp = scipy.ndimage.interpolation.zoom(image[ystart:yend, xstart:xend, zstart:zend], scales[i])
-            label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map[ystart:yend, xstart:xend,zstart:zend], scales[i]))
+            image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
+            label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map, scales[i]))
 
+            ystart = int(max([center[0]*scales[i] - patch_size[0] / 2, 0]))
+            yend = int(min([center[0]*scales[i] + patch_size[0] / 2, image_tmp.shape[0]]))
+            xstart = int(max([center[1]*scales[i] - patch_size[1] / 2, 0]))
+            xend = int(min([center[1]*scales[i] + patch_size[1] / 2, image_tmp.shape[1]]))
+            zstart = int(max([center[2]*scales[i] - patch_size[2] / 2, 0]))
+            zend = int(min([center[2]*scales[i] + patch_size[2] / 2, image_tmp.shape[2]]))
+
+            image_tmp = image_tmp[ystart:yend, xstart:xend, zstart:zend]
+            label_map_tmp = label_map_tmp[ystart:yend, xstart:xend,zstart:zend]
 
             ystart = int((patch_size[0] - image_tmp.shape[0])/2)
             yend = int(ystart + image_tmp.shape[0])
