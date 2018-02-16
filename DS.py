@@ -114,23 +114,9 @@ class DS:
         patch_size = self.patch_size
 
         for i in self.train_indexes[fold]:
-            # nz = np.nonzero(self.label_maps[i])
-            # x = np.max(nz[0]) - np.min(nz[0])
-            # y = np.max(nz[1]) - np.min(nz[1])
-            # z = np.max(nz[2]) - np.min(nz[2])
-
-            # if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
             train_image.append(self.images[i])
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
-            # else:
-            #     train_image.append(scipy.ndimage.interpolation.zoom(self.images[i], 0.5))
-            #     train_label_map.append(np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)))
-            #     train_center.append([round(self.centers[i][0]*0.5), round(self.centers[i][1]*0.5), round(self.centers[i][2]*0.5)])
-
-
-
-
         # ================================zoom out=========================================
         train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
         # ================================rotation=========================================
@@ -139,66 +125,15 @@ class DS:
         train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
-            image = train_image[i]
-            label_map = train_label_map[i]
-            center = train_center[i]
-            ystart = max([center[0] - int(patch_size[0] / 2), 0])
-            yend = min([center[0] + int(patch_size[0] / 2), image.shape[0]])
-            xstart = max([center[1] - int(patch_size[1] / 2), 0])
-            xend = min([center[1] + int(patch_size[1] / 2), image.shape[1]])
-            zstart = max([center[2] - int(patch_size[2] / 2), 0])
-            zend = min([center[2] + int(patch_size[2] / 2), image.shape[2]])
-
-            image_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
-            label_map_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
-            real_size = [yend - ystart, xend - xstart, zend - zstart]
-
-            image_tmp[:real_size[0], :real_size[1], :real_size[2]] = image[ystart:yend, xstart:xend, zstart:zend]
-            x_train.append(image_tmp)
-
-            label_map_tmp[:real_size[0], :real_size[1], :real_size[2]] = label_map[ystart:yend, xstart:xend,
-                                                                         zstart:zend]
-            y_train.append(label_map_tmp)
-
-        x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
-        y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
+            self.add(i, x_train, y_train)
+        x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
 
         # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
-            # nz = np.nonzero(self.label_maps[i])
-            # x = np.max(nz[0]) - np.min(nz[0])
-            # y = np.max(nz[1]) - np.min(nz[1])
-            # z = np.max(nz[2]) - np.min(nz[2])
-
-            # if x <= self.patch_size[0] and y <= self.patch_size[1] and z <= self.patch_size[2]:
-            image = self.images[i]
-            label_map = self.label_maps[i]
-            center = self.centers[i]
-            # else:
-            #     image = scipy.ndimage.interpolation.zoom(self.images[i], 0.5)
-            #     label_map = np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5))
-            #     center = [round(self.centers[i][0]*0.5), round(self.centers[i][1]*0.5), round(self.centers[i][2]*0.5)]
-
-            ystart = max([center[0] - int(patch_size[0] / 2), 0])
-            yend = min([center[0] + int(patch_size[0] / 2), image.shape[0]])
-            xstart = max([center[1] - int(patch_size[1] / 2), 0])
-            xend = min([center[1] + int(patch_size[1] / 2), image.shape[1]])
-            zstart = max([center[2] - int(patch_size[2] / 2), 0])
-            zend = min([center[2] + int(patch_size[2] / 2), image.shape[2]])
-
-            image_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
-            label_map_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
-            real_size = [yend - ystart, xend - xstart, zend - zstart]
-
-            image_tmp[:real_size[0], :real_size[1], :real_size[2]] = image[ystart:yend, xstart:xend, zstart:zend]
-            x_test.append(image_tmp)
-
-            label_map_tmp[:real_size[0], :real_size[1], :real_size[2]] = label_map[ystart:yend, xstart:xend,
-                                                                             zstart:zend]
-            y_test.append(label_map_tmp)
-
-        x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
-        y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
+            self.add(i, x_test, y_test)
+        x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
 
         return x_train, y_train, x_test, y_test
 
@@ -218,3 +153,26 @@ class DS:
 
         open(g_path + '\info.txt', "w+").close()
         return open(g_path + '\info.txt', "a")
+
+    def add(self, i, x, y):
+        patch_size = self.patch_size
+        image = self.images[i]
+        label_map = self.label_maps[i]
+        center = self.centers[i]
+        image_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        label_map_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        scales = [1, 0.5, 0.25]
+        for i in (1,2,3):
+            ystart = max([center[0]*scales[i] - int(patch_size[0] / (2*scales[i])), 0])
+            yend = min([center[0]*scales[i] + int(patch_size[0] / (2*scales[i])), image.shape[0]])
+            xstart = max([center[1]*scales[i] - int(patch_size[1] / (2*scales[i])), 0])
+            xend = min([center[1]*scales[i] + int(patch_size[1] / (2*scales[i])), image.shape[1]])
+            zstart = max([center[2]*scales[i] - int(patch_size[2] / (2*scales[i])), 0])
+            zend = min([center[2]*scales[i] + int(patch_size[2] / (2*scales[i])), image.shape[2]])
+            real_size = [yend - ystart, xend - xstart, zend - zstart]
+            image_tmp[:real_size[0], :real_size[1], :real_size[2], i] = image[ystart:yend, xstart:xend, zstart:zend]
+            label_map_tmp[:real_size[0], :real_size[1], :real_size[2], i] = label_map[ystart:yend, xstart:xend,zstart:zend]
+
+
+        y.append(label_map_tmp)
+        x.append(image_tmp)
