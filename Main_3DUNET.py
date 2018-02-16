@@ -13,7 +13,7 @@ epochs = 500
 repeat = 5
 K = 3
 angles = []
-scales = [0.5,0.25]
+scales = [0.5]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, K, angles, scales)
@@ -27,7 +27,7 @@ logger.write('angles: ' + str(angles) + '\n')
 logger.write('scales: ' + str(scales) + '\n')
 logger.flush()
 
-init_data = InitData.__call__()
+# init_data = InitData.__call__()
 
 for fold in range(0,K):
     x_train, y_train, x_test, y_test = ds.get_data(fold)
@@ -35,7 +35,7 @@ for fold in range(0,K):
     logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 3))
         logger.write('repeat: ' + str(repeat_count) + '\n')
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)

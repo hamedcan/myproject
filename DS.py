@@ -125,13 +125,13 @@ class DS:
         train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
-            self.add(i, x_train, y_train)
+            self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
         x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
         y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
 
         # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
-            self.add(i, x_test, y_test)
+            self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
         x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
         y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
 
@@ -154,25 +154,33 @@ class DS:
         open(g_path + '\info.txt', "w+").close()
         return open(g_path + '\info.txt', "a")
 
-    def add(self, i, x, y):
+    def add(self, image, label_map, center, x, y):
         patch_size = self.patch_size
-        image = self.images[i]
-        label_map = self.label_maps[i]
-        center = self.centers[i]
-        image_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
-        label_map_tmp = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
         scales = [1, 0.5, 0.25]
-        for i in (1,2,3):
-            ystart = max([center[0]*scales[i] - int(patch_size[0] / (2*scales[i])), 0])
-            yend = min([center[0]*scales[i] + int(patch_size[0] / (2*scales[i])), image.shape[0]])
-            xstart = max([center[1]*scales[i] - int(patch_size[1] / (2*scales[i])), 0])
-            xend = min([center[1]*scales[i] + int(patch_size[1] / (2*scales[i])), image.shape[1]])
-            zstart = max([center[2]*scales[i] - int(patch_size[2] / (2*scales[i])), 0])
-            zend = min([center[2]*scales[i] + int(patch_size[2] / (2*scales[i])), image.shape[2]])
-            real_size = [yend - ystart, xend - xstart, zend - zstart]
-            image_tmp[:real_size[0], :real_size[1], :real_size[2], i] = image[ystart:yend, xstart:xend, zstart:zend]
-            label_map_tmp[:real_size[0], :real_size[1], :real_size[2], i] = label_map[ystart:yend, xstart:xend,zstart:zend]
+        for i in (0,1,2):
+            ystart = int(max([center[0]*scales[i] - patch_size[0] / (2*scales[i]), 0]))
+            yend = int(min([center[0]*scales[i] + patch_size[0] / (2*scales[i]), image.shape[0]]))
+            xstart = int(max([center[1]*scales[i] - patch_size[1] / (2*scales[i]), 0]))
+            xend = int(min([center[1]*scales[i] + patch_size[1] / (2*scales[i]), image.shape[1]]))
+            zstart = int(max([center[2]*scales[i] - patch_size[2] / (2*scales[i]), 0]))
+            zend = int(min([center[2]*scales[i] + patch_size[2] / (2*scales[i]), image.shape[2]]))
+
+            image_tmp = scipy.ndimage.interpolation.zoom(image[ystart:yend, xstart:xend, zstart:zend], scales[i])
+            label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map[ystart:yend, xstart:xend,zstart:zend], scales[i]))
 
 
-        y.append(label_map_tmp)
-        x.append(image_tmp)
+            ystart = int((patch_size[0] - image_tmp.shape[0])/2)
+            yend = int(ystart + image_tmp.shape[0])
+            xstart = int((patch_size[1] - image_tmp.shape[1])/2)
+            xend = int(xstart + image_tmp.shape[1])
+            zstart = int((patch_size[2] - image_tmp.shape[2])/2)
+            zend = int(zstart + image_tmp.shape[2])
+
+            image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
+            label_map_final[ystart:yend, xstart:xend, zstart:zend, i] = label_map_tmp
+
+        x.append(image_final)
+        y.append(label_map_final)
+
