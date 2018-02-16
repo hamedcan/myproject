@@ -157,7 +157,7 @@ class DS:
     def add(self, image, label_map, center, x, y):
         patch_size = self.patch_size
         image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
-        label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 1))
 
         scales = [1, 0.5, 0.25]
         for i in (0,1,2):
@@ -183,7 +183,8 @@ class DS:
             zend = int(zstart + image_tmp.shape[2])
 
             image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
-            label_map_final[ystart:yend, xstart:xend, zstart:zend, i] = label_map_tmp
+            if i== 0:
+                label_map_final[ystart:yend, xstart:xend, zstart:zend, i] = label_map_tmp
 
         x.append(image_final)
         y.append(label_map_final)

@@ -9,9 +9,9 @@ from Init_data import InitData
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 500
-repeat = 5
-K = 3
+epochs = 200
+repeat = 3
+K = 5
 angles = []
 scales = [0.5]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
