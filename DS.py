@@ -10,13 +10,14 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, K=5, angles=[], scales=[]):
+    def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
         self.K = K
         self.angles = angles
         self.scales = scales
+        self.channel = channel
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -126,13 +127,13 @@ class DS:
         # ======================================================================================================
         for i in range(0, train_count):
             self.add_8(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
-        x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
         # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
             self.add_8(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
-        x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
         return x_train, y_train, x_test, y_test
@@ -156,11 +157,11 @@ class DS:
 
     def add(self, image, label_map, center, x, y):
         patch_size = self.patch_size
-        image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 3))
+        image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 1))
 
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
-        for i in (0, 1, 2):
+        for i in (0, self.channel):
 
             image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
             if i == 0:

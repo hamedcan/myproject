@@ -11,12 +11,13 @@ patch_size = [40, 40, 16]
 batch_size = 16
 epochs = 200
 repeat = 3
+channel = 1
 K = 5
 angles = []
 scales = [0.5]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
-ds = DS('.\data\\', patch_size, K, angles, scales)
+ds = DS('.\data\\', patch_size, channel, K, angles, scales)
 logger = ds.create_files(K, repeat, g_path)
 model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
 logger.write('batch size: ' + str(batch_size) + '\n')
@@ -35,7 +36,7 @@ for fold in range(0,K):
     logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], 3,))
+        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], channel,))
         logger.write('repeat: ' + str(repeat_count) + '\n')
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
@@ -49,7 +50,7 @@ for fold in range(0,K):
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         # save images to file#######################################################################
-        image = np.zeros([patch_size[0], patch_size[1], 3])
+        image = np.zeros([patch_size[0], patch_size[1], channel])
         logger.flush()
 
         for i in range(0, x_test.shape[0]):
