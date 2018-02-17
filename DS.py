@@ -127,13 +127,13 @@ class DS:
         for i in range(0, train_count):
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
         x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
-        y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
         # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
         x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
-        y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 3))
+        y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
 
         return x_train, y_train, x_test, y_test
 
@@ -160,7 +160,7 @@ class DS:
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 1))
 
         scales = [1, 0.5, 0.25]
-        for i in (0,1,2):
+        for i in (0, 1, 2):
 
             image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
             label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map, scales[i]))
@@ -183,7 +183,7 @@ class DS:
             zend = int(zstart + image_tmp.shape[2])
 
             image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
-            if i== 0:
+            if i == 0:
                 label_map_final[ystart:yend, xstart:xend, zstart:zend, i] = label_map_tmp
 
         x.append(image_final)
