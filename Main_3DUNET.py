@@ -8,7 +8,7 @@ from Init_data import InitData
 
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
-batch_size = 64
+batch_size = 16
 epochs = 100
 repeat = 3
 channel = 1
@@ -36,7 +36,7 @@ for fold in range(0,K):
     logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
     for repeat_count in range(0,repeat):
-        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], channel,))
+        model = Model.get_model(logger ,1 ,input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
         logger.write('repeat: ' + str(repeat_count) + '\n')
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
