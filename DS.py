@@ -166,12 +166,12 @@ class DS:
             if i == 0:
                 label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map, scales[i]))
 
-            ystart = int(max([center[0]*scales[i] - patch_size[0] / 2, 0]))
-            yend = int(min([center[0]*scales[i] + patch_size[0] / 2, image_tmp.shape[0]]))
-            xstart = int(max([center[1]*scales[i] - patch_size[1] / 2, 0]))
-            xend = int(min([center[1]*scales[i] + patch_size[1] / 2, image_tmp.shape[1]]))
-            zstart = int(max([center[2]*scales[i] - patch_size[2] / 2, 0]))
-            zend = int(min([center[2]*scales[i] + patch_size[2] / 2, image_tmp.shape[2]]))
+            ystart = int(max([center[0]*scales[i][0] - patch_size[0] / 2, 0]))
+            yend = int(min([center[0]*scales[i][0] + patch_size[0] / 2, image_tmp.shape[0]]))
+            xstart = int(max([center[1]*scales[i][1] - patch_size[1] / 2, 0]))
+            xend = int(min([center[1]*scales[i][1] + patch_size[1] / 2, image_tmp.shape[1]]))
+            zstart = int(max([center[2]*scales[i][2] - patch_size[2] / 2, 0]))
+            zend = int(min([center[2]*scales[i][2] + patch_size[2] / 2, image_tmp.shape[2]]))
 
             image_tmp = image_tmp[ystart:yend, xstart:xend, zstart:zend]
             if i == 0:
