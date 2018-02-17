@@ -1,31 +1,32 @@
+from __future__ import print_function
+import matplotlib.pylab as plt
 import numpy as np
 import scipy.io
-from xlrd import open_workbook
-path = '.\data\\'
-centers = []
-count = 0
-data = []
-size = 1
-print('Weight Initialize - loading')
-wb = open_workbook(path + 'data.xlsx')
-for s in wb.sheets():
-    nrows = s._dimnrows
-    file_name = [''] * nrows
-    for i in range(nrows):
-        centers.append([int(s.cell(i, 4).value), int(s.cell(i, 3).value), int(s.cell(i, 5).value)])
-        file_name[i] = s.cell(i, 0).value
-    count = nrows
+import scipy.ndimage
 
-    for img_count in range(0, count):
-        volname = file_name[img_count]
+image_final = np.zeros((300, 300, 300, 3))
+center = [300, 300, 2]
+image = plt.imread("D:\\Pictures\\wallpaper\\bear.jpg")
+print(image.shape)
+scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
+for i in (0, 1, 2):
+    image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
 
-        label_map = scipy.io.loadmat('.\data\gtruth_' + volname + '_perim.mat')
-        label_map = label_map['gtruth_perim']
-        label_map = np.reshape(label_map, (label_map.shape[0], label_map.shape[1], label_map.shape[2]))
-        nz = np.nonzero(label_map)
+    ystart = int(max([center[0]*scales[i][0] - 300 / 2, 0]))
+    yend = int(min([center[0]*scales[i][0] + 300 / 2, image_tmp.shape[0]]))
+    xstart = int(max([center[1]*scales[i][1] - 300 / 2, 0]))
+    xend = int(min([center[1]*scales[i][1] + 300 / 2, image_tmp.shape[1]]))
+    zstart = int(max([center[2]*scales[i][2] - 3 / 2, 0]))
+    zend = int(min([center[2]*scales[i][2] + 3 / 2, image_tmp.shape[2]]))
 
-        x = np.max(nz[0]) - np.min(nz[0])
-        y = np.max(nz[1]) - np.min(nz[1])
-        z = np.max(nz[2]) - np.min(nz[2])
-        print(str(x) + "," + str(y) + "," + str(z))
+    image_tmp = image_tmp[ystart:yend, xstart:xend, zstart:zend]
 
+    ystart = int((300 - image_tmp.shape[0])/2)
+    yend = int(ystart + image_tmp.shape[0])
+    xstart = int((300 - image_tmp.shape[1])/2)
+    xend = int(xstart + image_tmp.shape[1])
+    zstart = int((300 - image_tmp.shape[2])/2)
+    zend = int(zstart + image_tmp.shape[2])
+    # image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
+    plt.imshow(image_tmp[:,:,0])
+    plt.show()
