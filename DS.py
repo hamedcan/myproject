@@ -161,11 +161,15 @@ class DS:
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 1))
 
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
-        for i in (0, self.channel):
+        for i in range(0, self.channel):
 
-            image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
+            if scales[i] == 1:
+                image_tmp = image
+            else:
+                image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
+
             if i == 0:
-                label_map_tmp = np.around(scipy.ndimage.interpolation.zoom(label_map, scales[i]))
+                label_map_tmp = label_map
 
             ystart = int(max([center[0]*scales[i][0] - patch_size[0] / 2, 0]))
             yend = int(min([center[0]*scales[i][0] + patch_size[0] / 2, image_tmp.shape[0]]))
