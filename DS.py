@@ -126,15 +126,17 @@ class DS:
         train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
+            print("train sample ", i," out of ", train_count)
             self.add_8(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
-        x_train = np.reshape(np.array(x_train), (train_count, patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_train = np.reshape(np.array(y_train), (train_count, patch_size[0], patch_size[1], patch_size[2], 1))
+        x_train = np.reshape(np.array(x_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
 
         # ===============t================e======================s=================t================================
         for i in self.test_indexes[fold]:
+            print("test sample ", i, " out of ", train_count)
             self.add_8(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
-        x_test = np.reshape(np.array(x_test), (test_count, patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_test = np.reshape(np.array(y_test), (test_count, patch_size[0], patch_size[1], patch_size[2], 1))
+        x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_test = np.reshape(np.array(y_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], 1))
 
         return x_train, y_train, x_test, y_test
 
@@ -163,7 +165,7 @@ class DS:
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
         for i in range(0, self.channel):
 
-            if scales[i] == 1:
+            if scales[i] == (1, 1, 1):
                 image_tmp = image
             else:
                 image_tmp = scipy.ndimage.interpolation.zoom(image, scales[i])
