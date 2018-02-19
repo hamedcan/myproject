@@ -9,7 +9,7 @@ from Init_data import InitData
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 150
+epochs = 1
 repeat = 3
 channel = 3
 K = 5

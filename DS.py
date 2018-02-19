@@ -210,3 +210,9 @@ class DS:
                     if all(tmp > 0 for tmp in tmp_center):
                         self.add(image, label_map, tmp_center, x, y)
 
+    # def advanced_dice(self, model, k, x_test, y_test, test_label_prediction):
+    #     for case in test_label_prediction:
+    #         if case
+
+
+
