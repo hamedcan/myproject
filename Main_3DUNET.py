@@ -9,7 +9,7 @@ from Init_data import InitData
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 150
+epochs = 15
 repeat = 3
 channel = 3
 K = 5
@@ -58,20 +58,36 @@ for fold in range(0,K):
 
         for i in range(0, x_test.shape[0]):
             for j in range(0, patch_size[2]):
-                image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
-                image[:, :, 1] = x_test[i, :, :, j, 0]
-                image[:, :, 2] = x_test[i, :, :, j, 0]
+                # image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
+                # image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
+                # image[:, :, 2] = x_test[i, :, :, j, 0]
+                # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '.png', image)
+
+
+                # image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
+                # image[:, :, 1] = x_test[i, :, :, j, 0]
+                # image[:, :, 2] = x_test[i, :, :, j, 0]
+                # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
+                #
+                # image[:, :, 0] = x_test[i, :, :, j, 0]
+                # image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
+                # image[:, :, 2] = x_test[i, :, :, j, 0]
+                # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-gt.png', image)
+                #
+                # image[:, :, 0] = x_test[i, :, :, j, 0]
+                # image[:, :, 1] = x_test[i, :, :, j, 0]
+                # image[:, :, 2] = x_test[i, :, :, j, 0]
+                # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-orig.png', image)
+
+
+
+                image[:, :, 0] =(test_label_prediction[i, :, :, j, 0])  # red for predicted by model
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
 
-                image[:, :, 0] = x_test[i, :, :, j, 0]
-                image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
-                image[:, :, 2] = x_test[i, :, :, j, 0]
+
+                image[:, :, 1] = (y_test[i, :, :, j, 0]/4)  # green for ground truth
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-gt.png', image)
 
-                image[:, :, 0] = x_test[i, :, :, j, 0]
-                image[:, :, 1] = x_test[i, :, :, j, 0]
-                image[:, :, 2] = x_test[i, :, :, j, 0]
-                plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-orig.png', image)
 
 
 logger.close()

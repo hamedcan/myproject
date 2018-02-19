@@ -160,7 +160,7 @@ class DS:
 
     def add(self, image, label_map, center, x, y):
         patch_size = self.patch_size
-        image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
+        image_final = np.ones((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
 
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
@@ -220,6 +220,7 @@ class DS:
         for i in range(0, c):
             p = predicted[i, :, :, :, 0]
             p[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            p = np.around(p)
 
             r = y_test[i, :, :, :, 0]
             r[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
@@ -229,10 +230,9 @@ class DS:
                 index = self.test_indexes[fold][i]
                 x_test[i, :, :, :, :], y_test[i, :, :, :, 0] = self.add2(self.images[index], self.label_maps[index], self.centers[index])
 
-
     def add2(self, image, label_map, center):
         patch_size = self.patch_size
-        image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
+        image_final = np.ones((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
         label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
 
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
