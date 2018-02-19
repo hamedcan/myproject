@@ -160,7 +160,7 @@ class DS:
     def add(self, image, label_map, center, x, y):
         patch_size = self.patch_size
         image_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
-        label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), 1))
+        label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
 
         scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
         for i in range(0, self.channel):
@@ -193,7 +193,7 @@ class DS:
 
             image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
             if i == 0:
-                label_map_final[ystart:yend, xstart:xend, zstart:zend, i] = label_map_tmp
+                label_map_final[ystart:yend, xstart:xend, zstart:zend] = label_map_tmp
 
         x.append(image_final)
         y.append(label_map_final)
@@ -201,8 +201,8 @@ class DS:
     def add_8(self, image, label_map, center, x, y):
         tmp_center = [0, 0, 0]
         patch_size = self.patch_size
-        for p in (-patch_size[0]/2, patch_size[0]/2):
-            for q in (-patch_size[1]/2, patch_size[1]/2):
+        for p in (-patch_size[0], 0, patch_size[0]):
+            for q in (-patch_size[1], 0, patch_size[1]):
                 for r in (-patch_size[2]/2, patch_size[2]/2):
                     tmp_center[0] = center[0] + p
                     tmp_center[1] = center[1] + q

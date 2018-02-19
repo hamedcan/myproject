@@ -7,11 +7,11 @@ from DS import DS
 from Init_data import InitData
 
 # initialization and prepare data set#########################################################
-patch_size = [40, 40, 16]
-batch_size = 16
-epochs = 100
+patch_size = [24, 24, 16]
+batch_size = 64
+epochs = 200
 repeat = 3
-channel = 1
+channel = 3
 K = 5
 angles = []
 scales = [0.5]
@@ -26,6 +26,7 @@ logger.write('repeat: ' + str(repeat) + '\n')
 logger.write('fold: ' + str(K) + '\n')
 logger.write('angles: ' + str(angles) + '\n')
 logger.write('scales: ' + str(scales) + '\n')
+logger.write('channel: ' + str(channel) + '\n')
 logger.flush()
 
 # init_data = InitData.__call__()
@@ -50,14 +51,25 @@ for fold in range(0,K):
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         # save images to file#######################################################################
-        image = np.zeros([patch_size[0], patch_size[1], channel])
+        image = np.zeros([patch_size[0], patch_size[1], 3])
         logger.flush()
 
         for i in range(0, x_test.shape[0]):
             for j in range(0, patch_size[2]):
                 image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
+                image[:, :, 1] = x_test[i, :, :, j, 0]
+                image[:, :, 2] = x_test[i, :, :, j, 0]
+                plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
+
+                image[:, :, 0] = x_test[i, :, :, j, 0]
                 image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
                 image[:, :, 2] = x_test[i, :, :, j, 0]
-                plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '.png', image)
+                plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-gt.png', image)
+
+                image[:, :, 0] = x_test[i, :, :, j, 0]
+                image[:, :, 1] = x_test[i, :, :, j, 0]
+                image[:, :, 2] = x_test[i, :, :, j, 0]
+                plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-orig.png', image)
+
 
 logger.close()
