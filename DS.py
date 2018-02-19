@@ -218,16 +218,16 @@ class DS:
         z = y_test.shape[3]
         m = 1  # margin
         for i in range(0, c):
-            p = predicted[i, :, :, :, 1]
-            p[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z))
+            p = predicted[i, :, :, :, 0]
+            p[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            r = y_test[i, :, :, :, 1]
-            r[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z))
+            r = y_test[i, :, :, :, 0]
+            r[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
             print('status:', str(np.count_nonzero(p)), str(np.count_nonzero(r)))
             if np.count_nonzero(p) and np.count_nonzero(r):
                 index = self.test_indexes[fold][i]
-                x_test[i, :, :, :, :], y_test[i, :, :, :, 1] = self.add2(self.images[index], self.label_maps[index], self.centers[index])
+                x_test[i, :, :, :, :], y_test[i, :, :, :, 0] = self.add2(self.images[index], self.label_maps[index], self.centers[index])
 
 
     def add2(self, image, label_map, center):
