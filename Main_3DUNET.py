@@ -8,13 +8,13 @@ from Init_data import InitData
 
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
-batch_size = 64
-epochs = 200
+batch_size = 16
+epochs = 150
 repeat = 3
 channel = 3
 K = 5
 angles = []
-scales = [0.5, 2]
+scales = []
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, channel, K, angles, scales)
