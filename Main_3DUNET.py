@@ -32,7 +32,7 @@ logger.flush()
 # init_data = InitData.__call__()
 
 for fold in range(0,K):
-    x_train, y_train, x_test, y_test = ds.get_data(fold)
+    x_train, y_train, x_test, y_test, x_test2, y_test2 = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
@@ -50,8 +50,7 @@ for fold in range(0,K):
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
-        # ds.post_process(fold, x_test, y_test, test_label_prediction)
-        logger.write('after correction test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
+        logger.write('after correction test accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
         # save images to file#######################################################################
         logger.flush()
 

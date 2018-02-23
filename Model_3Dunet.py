@@ -1,7 +1,7 @@
 import numpy as np
 from keras import backend as K
 from keras.engine import Input, Model
-from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization
+from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization, Lambda
 from keras import optimizers
 from keras.layers.merge import concatenate
 import tensorflow as tf
@@ -28,7 +28,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     inputs = Input(input_shape)
 
-    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, :, 0:1])
+    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(0)(inputs))
     conv1_1 = BatchNormalization()(conv1_1)
     conv1_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_1)
     conv1_1 = BatchNormalization()(conv1_1)
@@ -78,7 +78,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_1)
     conv7_1 = BatchNormalization()(conv7_1)
 
-    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, :, 1:2])
+    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(1)(inputs))
     conv1_2 = BatchNormalization()(conv1_2)
     conv1_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_2)
     conv1_2 = BatchNormalization()(conv1_2)
@@ -129,7 +129,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_2 = BatchNormalization()(conv7_2)
 
     conv8 = concatenate([conv7_1, conv7_2], axis=4)
-    conv8 = Conv3D(n_labels, (1, 1, 1))(conv8)
+    conv8 = Conv3D(n_labels, (1, 1, 1))(conv7_1)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
@@ -154,3 +154,9 @@ def tao_method(shape, dtype='float32'):
     data = InitData.__call__()
     print("initializing with size: " + str(shape))
     return tf.convert_to_tensor(np.array(data.get(shape[3], shape[4])), dtype=dtype)
+
+
+def crop(start):
+    def func(x):
+            return x[:, :, :, :, start: start + 1]
+    return Lambda(func)
