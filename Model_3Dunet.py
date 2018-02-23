@@ -83,7 +83,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     adam = optimizers.Adam()
 
-    model.compile(optimizer=adam, loss=dice_coef_loss, metrics=[dice_coef, 'acc'])
+    model.compile(optimizer=adam, loss='cross', metrics=[dice_coef, 'acc'])
     return model
 
 

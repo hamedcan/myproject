@@ -9,9 +9,9 @@ from Init_data import InitData
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 15
+epochs = 250
 repeat = 3
-channel = 3
+channel = 2
 K = 5
 angles = []
 scales = [0.5]
@@ -50,10 +50,9 @@ for fold in range(0,K):
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
-        ds.post_process(fold, x_test, y_test, test_label_prediction)
+        # ds.post_process(fold, x_test, y_test, test_label_prediction)
         logger.write('after correction test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         # save images to file#######################################################################
-        image = np.zeros([patch_size[0], patch_size[1], 3])
         logger.flush()
 
         for i in range(0, x_test.shape[0]):
@@ -80,12 +79,12 @@ for fold in range(0,K):
                 # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-orig.png', image)
 
 
-
+                image = np.zeros([patch_size[0], patch_size[1], 3])
                 image[:, :, 0] =(test_label_prediction[i, :, :, j, 0])  # red for predicted by model
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
 
-
-                image[:, :, 1] = (y_test[i, :, :, j, 0]/4)  # green for ground truth
+                image = np.zeros([patch_size[0], patch_size[1], 3])
+                image[:, :, 1] = (y_test[i, :, :, j, 0])  # green for ground truth
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-gt.png', image)
 
 
