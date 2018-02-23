@@ -28,7 +28,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     inputs = Input(input_shape)
 
-    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, 0:1])
+    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, :, 0:1])
     conv1_1 = BatchNormalization()(conv1_1)
     conv1_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_1)
     conv1_1 = BatchNormalization()(conv1_1)
@@ -78,7 +78,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_1)
     conv7_1 = BatchNormalization()(conv7_1)
 
-    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, 1:2])
+    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs[:, :, :, :, 1:2])
     conv1_2 = BatchNormalization()(conv1_2)
     conv1_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_2)
     conv1_2 = BatchNormalization()(conv1_2)
