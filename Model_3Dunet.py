@@ -1,7 +1,7 @@
 import numpy as np
 from keras import backend as K
 from keras.engine import Input, Model
-from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization
+from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization, Lambda
 from keras import optimizers
 from keras.layers.merge import concatenate
 import tensorflow as tf
@@ -135,7 +135,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     adam = optimizers.Adam()
 
-    model.compile(optimizer=adam, loss='cross', metrics=[dice_coef, 'acc'])
+    model.compile(optimizer=adam, loss=bwcl, metrics=[dice_coef, 'acc'])
     return model
 
 
@@ -144,6 +144,14 @@ def dice_coef(y_true, y_pred, smooth=1.):
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+def bwcl(y_true, y_pred):
+    _epsilon = tf.convert_to_tensor(10e-8, y_pred.dtype.base_dtype)
+    output = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
+    output = tf.log(output / (1 - output))
+    return K.mean(tf.nn.weighted_cross_entropy_with_logits(y_true, output, 10), axis=-1)
+
+
 
 
 def dice_coef_loss(y_true, y_pred):
@@ -154,3 +162,9 @@ def tao_method(shape, dtype='float32'):
     data = InitData.__call__()
     print("initializing with size: " + str(shape))
     return tf.convert_to_tensor(np.array(data.get(shape[3], shape[4])), dtype=dtype)
+
+def crop(start):
+    def func(x):
+            return x[:, :, :, :, start: start + 1]
+    return Lambda(func)
+
