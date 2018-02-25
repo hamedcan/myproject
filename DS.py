@@ -108,6 +108,9 @@ class DS:
         x_test = []
         y_test = []
 
+        x_test2 = []
+        y_test2 = []
+
         train_image = []
         train_label_map = []
         train_center = []
@@ -132,14 +135,18 @@ class DS:
                              (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
 
-        # ===============t================e======================s=================t================================
+        # ===============t================e====================s=================t================================
         for i in self.test_indexes[fold]:
             print("test sample ", i, " out of ", train_count)
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
+            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.5), np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)), [round(self.centers[i][0] * 0.5), round(self.centers[i][1] * 0.5), round(self.centers[i][2] * 0.5)], x_test2, y_test2)
         x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test = np.reshape(np.array(y_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], 1))
 
-        return x_train, y_train, x_test, y_test
+        x_test2 = np.reshape(np.array(x_test2), (len(x_test2), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_test2 = np.reshape(np.array(y_test2), (len(x_test2), patch_size[0], patch_size[1], patch_size[2], 1))
+
+        return x_train, y_train, x_test, y_test, x_test2, y_test2
 
     @staticmethod
     def create_files(K, R, g_path):
@@ -226,9 +233,6 @@ class DS:
             r[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
             print('status:', str(np.count_nonzero(p)), str(np.count_nonzero(r)))
-            if np.count_nonzero(p) and np.count_nonzero(r):
-                index = self.test_indexes[fold][i]
-                x_test[i, :, :, :, :], y_test[i, :, :, :, 0] = self.add2(self.images[index], self.label_maps[index], self.centers[index])
 
     def add2(self, image, label_map, center):
         patch_size = self.patch_size

@@ -28,7 +28,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     inputs = Input(input_shape)
 
-    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs)
+    conv1_1 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(0)(inputs))
     conv1_1 = BatchNormalization()(conv1_1)
     conv1_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_1)
     conv1_1 = BatchNormalization()(conv1_1)
@@ -78,7 +78,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_1)
     conv7_1 = BatchNormalization()(conv7_1)
 
-    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(inputs)
+    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(1)(inputs))
     conv1_2 = BatchNormalization()(conv1_2)
     conv1_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_2)
     conv1_2 = BatchNormalization()(conv1_2)
@@ -135,7 +135,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     adam = optimizers.Adam()
 
-    model.compile(optimizer=adam, loss=bwcl, metrics=[dice_coef, 'acc'])
+    model.compile(optimizer=adam, loss='cross', metrics=[dice_coef, 'acc'])
     return model
 
 
@@ -148,13 +148,6 @@ def dice_coef(y_true, y_pred, smooth=1.):
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
-
-
-def bwcl(y_true, y_pred):
-    _epsilon = tf.convert_to_tensor(10e-8, y_pred.dtype.base_dtype)
-    output = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
-    output = tf.log(output / (1 - output))
-    return K.mean(tf.nn.weighted_cross_entropy_with_logits(labels=y_true, logits=output, pos_weight=10), axis=-1)
 
 
 def tao_method(shape, dtype='float32'):
