@@ -246,21 +246,21 @@ class DS:
 
             r2 = gt2[i, :, :, :, 0].copy()
 
-            if(np.count_nonzero(tmp) > t): # TRUE
+            if np.count_nonzero(tmp) >= t:  # TRUE
                 f = np.count_nonzero(np.add(r2,p2) == 1)  # XOR
                 tp = np.count_nonzero(np.multiply(r2,p2))  # AND
                 t_f += f*2
                 t_tp += tp*2
                 dice.append((2*tp)/(f+2*tp))
 
-            if(np.count_nonzero(p) < t): # FALSE
+            if np.count_nonzero(p) < t: # FALSE
                 f = np.count_nonzero(np.add(r,p) == 1)  # XOR
                 tp = np.count_nonzero(np.multiply(r,p))  # AND
                 t_f += f
                 t_tp += tp
                 dice.append((2*tp)/(f+2*tp))
 
-        return np.average(dice), (2*t_tp)/(f+2*t_tp)
+        return np.average(dice), (2*t_tp)/(t_f+2*t_tp)
 
     def add2(self, image, label_map, center):
         patch_size = self.patch_size
