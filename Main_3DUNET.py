@@ -46,23 +46,27 @@ for fold in range(0,K):
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
         train_label_prediction = model.predict(x_train)
-        test_label_prediction = model.predict(x_test)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         logger.write('after correction test accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
+        micro, macro = DS.post_process(y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro))
         # save images to file#######################################################################
         logger.flush()
 
         for i in range(0, x_test.shape[0]):
             for j in range(0, patch_size[2]):
-                # image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
+                # image[:, :, 0] = x_test[i, :, :, j, 0] + (pred[i, :, :, j, 0]/4)  # red for predicted by model
                 # image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
                 # image[:, :, 2] = x_test[i, :, :, j, 0]
                 # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '.png', image)
 
 
-                # image[:, :, 0] = x_test[i, :, :, j, 0] + (test_label_prediction[i, :, :, j, 0]/4)  # red for predicted by model
+                # image[:, :, 0] = x_test[i, :, :, j, 0] + (pred[i, :, :, j, 0]/4)  # red for predicted by model
                 # image[:, :, 1] = x_test[i, :, :, j, 0]
                 # image[:, :, 2] = x_test[i, :, :, j, 0]
                 # plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
@@ -79,7 +83,7 @@ for fold in range(0,K):
 
 
                 image = np.zeros([patch_size[0], patch_size[1], 3])
-                image[:, :, 0] =(test_label_prediction[i, :, :, j, 0])  # red for predicted by model
+                image[:, :, 0] =(pred[i, :, :, j, 0])  # red for predicted by model
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-p.png', image)
 
                 image = np.zeros([patch_size[0], patch_size[1], 3])

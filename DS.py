@@ -218,21 +218,49 @@ class DS:
                     if all(tmp > 0 for tmp in tmp_center):
                         self.add(image, label_map, tmp_center, x, y)
 
-    def post_process(self, fold, x_test, y_test, predicted):
-        c = y_test.shape[0]
-        x = y_test.shape[1]
-        y = y_test.shape[2]
-        z = y_test.shape[3]
+    @staticmethod
+    def post_process(gt, pred, gt2, pred2):
         m = 1  # margin
+        t = 10 # threshold
+        t_tp = 0
+        t_f = 0
+        dice = []
+
+        c = gt.shape[0]
+        x = gt.shape[1]
+        y = gt.shape[2]
+        z = gt.shape[3]
+
         for i in range(0, c):
-            p = predicted[i, :, :, :, 0]
-            p[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            p = pred[i, :, :, :, 0].copy()
             p = np.around(p)
 
-            r = y_test[i, :, :, :, 0]
-            r[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            p2 = pred2[i, :, :, :, 0].copy()
+            p2 = np.around(p2)
 
-            print('status:', str(np.count_nonzero(p)), str(np.count_nonzero(r)))
+            tmp = pred[i, :, :, :, 0].copy()
+            tmp[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            tmp = np.around(tmp)
+
+            r = gt[i, :, :, :, 0].copy()
+
+            r2 = gt2[i, :, :, :, 0].copy()
+
+            if(np.count_nonzero(tmp) > t): # TRUE
+                f = np.count_nonzero(np.add(r2,p2) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(r2,p2))  # AND
+                t_f += f*2
+                t_tp += tp*2
+                dice.append((2*tp)/(f+2*tp))
+
+            if(np.count_nonzero(p) < t): # FALSE
+                f = np.count_nonzero(np.add(r,p) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(r,p))  # AND
+                t_f += f
+                t_tp += tp
+                dice.append((2*tp)/(f+2*tp))
+
+        return np.average(dice), (2*t_tp)/(f+2*t_tp)
 
     def add2(self, image, label_map, center):
         patch_size = self.patch_size
@@ -272,3 +300,4 @@ class DS:
             if i == 0:
                 label_map_final[ystart:yend, xstart:xend, zstart:zend] = label_map_tmp
         return image_final, label_map_final
+
