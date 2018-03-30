@@ -5,6 +5,7 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 from DS import DS
 from Init_data import InitData
+import scipy.io
 
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
@@ -49,10 +50,18 @@ for fold in range(0,K):
         pred = model.predict(x_test)
         pred2 = model.predict(x_test2)
 
+        x = round(x_test.shape[1] / 4)
+        y = round(x_test.shape[2] / 4)
+        z = round(x_test.shape[3] / 4)
+
+        x_tmp = scipy.ndimage.interpolation.zoom(x_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
+        y_tmp = scipy.ndimage.interpolation.zoom(y_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
         logger.write('1/2 accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
+        logger.write('0.5*2 accuracy: \t' + str(model.evaluate(x_tmp, y_tmp)[1]) + '\n\n')
+
         micro, macro = DS.post_process(y_test, pred, y_test2, pred2)
         logger.write('my method: ' + str(micro) + '  ' + str(macro))
         # save images to file#######################################################################
