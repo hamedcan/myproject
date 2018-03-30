@@ -56,6 +56,7 @@ for fold in range(0, K):
         x_tmp = scipy.ndimage.interpolation.zoom(x_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
         y_tmp = scipy.ndimage.interpolation.zoom(y_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
         # logging#######################################################################################
+        logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
 
@@ -64,7 +65,7 @@ for fold in range(0, K):
 
         logger.write('test 0.5*2 accuracy: \t' + str(model.evaluate(x_tmp, y_tmp)[1]) + '\n')
         logger.write('my method: ' + str(micro) + '  ' + str(macro) + '\n')
-        logger.write('==========================================\n')
+
         # save images to file#######################################################################
         logger.flush()
 

@@ -245,18 +245,18 @@ class DS:
             margin_gt = np.around(gt1[i, :, :, :, 0])
             margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(np.count_nonzero(margin_gt)))
+            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(np.count_nonzero(margin_gt))+'\n')
 
             if np.count_nonzero(margin_pred) >= t or np.count_nonzero(margin_gt) >= t:  # TRUE
-                f = np.count_nonzero(np.add(gt2, np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(gt2, np.around(pred2[i, :, :, :, 0])))  # AND
+                f = np.count_nonzero(np.add(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
                 t_f += f*8
                 t_tp += tp*8
                 dice.append((8*tp)/(f+8*tp))
 
             else:  # FALSE
-                f = np.count_nonzero(np.add(gt1, np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(gt1, np.around(pred1[i, :, :, :, 0])))  # AND
+                f = np.count_nonzero(np.add(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])))  # AND
                 t_f += f
                 t_tp += tp
                 dice.append((2 * tp) / (f + 2 * tp))
