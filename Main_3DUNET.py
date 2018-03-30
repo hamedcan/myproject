@@ -52,7 +52,7 @@ for fold in range(0,K):
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
-        logger.write('after correction test accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
+        logger.write('1/2 accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
         micro, macro = DS.post_process(y_test, pred, y_test2, pred2)
         logger.write('my method: ' + str(micro) + '  ' + str(macro))
         # save images to file#######################################################################

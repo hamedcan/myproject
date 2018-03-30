@@ -211,18 +211,6 @@ class DS:
         x.append(image_final)
         y.append(label_map_final)
 
-    def add_8(self, image, label_map, center, x, y):
-        tmp_center = [0, 0, 0]
-        patch_size = self.patch_size
-        for p in (-patch_size[0], 0, patch_size[0]):
-            for q in (-patch_size[1], 0, patch_size[1]):
-                for r in (-patch_size[2] / 2, patch_size[2] / 2):
-                    tmp_center[0] = center[0] + p
-                    tmp_center[1] = center[1] + q
-                    tmp_center[2] = center[2] + r
-                    if all(tmp > 0 for tmp in tmp_center):
-                        self.add(image, label_map, tmp_center, x, y)
-
     @staticmethod
     def post_process(gt, pred, gt2, pred2):
         m = 1  # margin
@@ -266,43 +254,3 @@ class DS:
                 dice.append((2 * tp) / (f + 2 * tp))
 
         return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp)
-
-
-def add2(self, image, label_map, center):
-    patch_size = self.patch_size
-    image_final = np.ones((int(patch_size[0]), int(patch_size[1]), int(patch_size[2]), self.channel))
-    label_map_final = np.zeros((int(patch_size[0]), int(patch_size[1]), int(patch_size[2])))
-
-    scales = [(1, 1, 1), (0.5, 0.5, 0.5), (0.25, 0.25, 0.25)]
-    for i in range(0, self.channel):
-
-        image_tmp = scipy.ndimage.interpolation.zoom(image, (0.5, 0.5, 0.5))
-
-        if scales[i] != (1, 1, 1):
-            image_tmp = scipy.ndimage.interpolation.zoom(image_tmp, scales[i])
-
-        if i == 0:
-            label_map_tmp = label_map
-
-        ystart = int(max([center[0] * scales[i][0] - patch_size[0] / 2, 0]))
-        yend = int(min([center[0] * scales[i][0] + patch_size[0] / 2, image_tmp.shape[0]]))
-        xstart = int(max([center[1] * scales[i][1] - patch_size[1] / 2, 0]))
-        xend = int(min([center[1] * scales[i][1] + patch_size[1] / 2, image_tmp.shape[1]]))
-        zstart = int(max([center[2] * scales[i][2] - patch_size[2] / 2, 0]))
-        zend = int(min([center[2] * scales[i][2] + patch_size[2] / 2, image_tmp.shape[2]]))
-
-        image_tmp = image_tmp[ystart:yend, xstart:xend, zstart:zend]
-        if i == 0:
-            label_map_tmp = label_map_tmp[ystart:yend, xstart:xend, zstart:zend]
-
-        ystart = int((patch_size[0] - image_tmp.shape[0]) / 2)
-        yend = int(ystart + image_tmp.shape[0])
-        xstart = int((patch_size[1] - image_tmp.shape[1]) / 2)
-        xend = int(xstart + image_tmp.shape[1])
-        zstart = int((patch_size[2] - image_tmp.shape[2]) / 2)
-        zend = int(zstart + image_tmp.shape[2])
-
-        image_final[ystart:yend, xstart:xend, zstart:zend, i] = image_tmp
-        if i == 0:
-            label_map_final[ystart:yend, xstart:xend, zstart:zend] = label_map_tmp
-    return image_final, label_map_final
