@@ -106,6 +106,9 @@ class DS:
         x_train = []
         y_train = []
 
+        x_train2 = []
+        y_train2 = []
+
         x_test = []
         y_test = []
 
@@ -132,9 +135,18 @@ class DS:
         for i in range(0, train_count):
             print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
+
+            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.5),
+                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.5)),
+                     [round(train_center[i][0] * 0.5), round(train_center[i][1] * 0.5),
+                      round(train_center[i][2] * 0.5)], x_train2, y_train2)
         x_train = np.reshape(np.array(x_train),
                              (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
+
+        x_train2 = np.reshape(np.array(x_train2),
+                             (len(x_train2), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_train2 = np.reshape(np.array(y_train2), (len(x_train2), patch_size[0], patch_size[1], patch_size[2], 1))
 
         # ===============t================e====================s=================t================================
         for i in self.test_indexes[fold]:
@@ -144,6 +156,8 @@ class DS:
                      np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)),
                      [round(self.centers[i][0] * 0.5), round(self.centers[i][1] * 0.5),
                       round(self.centers[i][2] * 0.5)], x_test2, y_test2)
+
+
         x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test = np.reshape(np.array(y_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], 1))
 
@@ -151,7 +165,7 @@ class DS:
                              (len(x_test2), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test2 = np.reshape(np.array(y_test2), (len(x_test2), patch_size[0], patch_size[1], patch_size[2], 1))
 
-        return x_train, y_train, x_test, y_test, x_test2, y_test2
+        return x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2
 
     @staticmethod
     def create_files(K, R, g_path):

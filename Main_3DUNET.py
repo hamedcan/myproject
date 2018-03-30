@@ -10,8 +10,8 @@ import scipy.io
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 5
-repeat = 1
+epochs = 200
+repeat = 3
 channel = 2
 K = 5
 angles = []
@@ -33,7 +33,7 @@ logger.flush()
 # init_data = InitData.__call__()
 
 for fold in range(0,K):
-    x_train, y_train, x_test, y_test, x_test2, y_test2 = ds.get_data(fold)
+    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     logger.write('contain:' + str(ds.train_indexes[fold])+'\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
@@ -42,28 +42,30 @@ for fold in range(0,K):
         logger.write('repeat: ' + str(repeat_count) + '\n')
         print('repeat: ' + str(repeat_count) + '\n')
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
+
+
         # train model##################################################################################
         model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True, validation_data=(x_test, y_test), verbose=2)
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
-        train_label_prediction = model.predict(x_train)
         pred = model.predict(x_test)
         pred2 = model.predict(x_test2)
 
         x = round(x_test.shape[1] / 4)
         y = round(x_test.shape[2] / 4)
         z = round(x_test.shape[3] / 4)
-
         x_tmp = scipy.ndimage.interpolation.zoom(x_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
         y_tmp = scipy.ndimage.interpolation.zoom(y_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
 
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
-        logger.write('1/2 accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
-        logger.write('0.5*2 accuracy: \t' + str(model.evaluate(x_tmp, y_tmp)[1]) + '\n\n')
 
+        logger.write('train2 accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
+        logger.write('test2 accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
+
+        logger.write('test 0.5*2 accuracy: \t' + str(model.evaluate(x_tmp, y_tmp)[1]) + '\n')
         micro, macro = DS.post_process(y_test, pred, y_test2, pred2)
-        logger.write('my method: ' + str(micro) + '  ' + str(macro))
+        logger.write('my method: ' + str(micro) + '  ' + str(macro)+'\n')
         # save images to file#######################################################################
         logger.flush()
 
