@@ -226,43 +226,37 @@ class DS:
         y.append(label_map_final)
 
     @staticmethod
-    def post_process(gt, pred, gt2, pred2):
+    def post_process(logger, gt1, pred1, gt2, pred2):
         m = 1  # margin
         t = 10  # threshold
         t_tp = 0
         t_f = 0
         dice = []
 
-        c = gt.shape[0]
-        x = gt.shape[1]
-        y = gt.shape[2]
-        z = gt.shape[3]
+        c = gt1.shape[0]
+        x = gt1.shape[1]
+        y = gt1.shape[2]
+        z = gt1.shape[3]
 
         for i in range(0, c):
-            p = pred[i, :, :, :, 0].copy()
-            p = np.around(p)
+            margin_pred = np.around(pred1[i, :, :, :, 0])
+            margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            p2 = pred2[i, :, :, :, 0].copy()
-            p2 = np.around(p2)
+            margin_gt = np.around(gt1[i, :, :, :, 0])
+            margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            tmp = pred[i, :, :, :, 0].copy()
-            tmp[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
-            tmp = np.around(tmp)
+            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(np.count_nonzero(margin_gt)))
 
-            r = gt[i, :, :, :, 0].copy()
+            if np.count_nonzero(margin_pred) >= t or np.count_nonzero(margin_gt) >= t:  # TRUE
+                f = np.count_nonzero(np.add(gt2, np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(gt2, np.around(pred2[i, :, :, :, 0])))  # AND
+                t_f += f*8
+                t_tp += tp*8
+                dice.append((8*tp)/(f+8*tp))
 
-            r2 = gt2[i, :, :, :, 0].copy()
-
-            if np.count_nonzero(tmp) >= t:  # TRUE
-                f = np.count_nonzero(np.add(r2,p2) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(r2,p2))  # AND
-                t_f += f*2
-                t_tp += tp*2
-                dice.append((2*tp)/(f+2*tp))
-
-            if np.count_nonzero(tmp) < t: # FALSE
-                f = np.count_nonzero(np.add(r, p) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(r, p))  # AND
+            else:  # FALSE
+                f = np.count_nonzero(np.add(gt1, np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
+                tp = np.count_nonzero(np.multiply(gt1, np.around(pred1[i, :, :, :, 0])))  # AND
                 t_f += f
                 t_tp += tp
                 dice.append((2 * tp) / (f + 2 * tp))
