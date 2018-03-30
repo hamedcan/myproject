@@ -9,8 +9,8 @@ from Init_data import InitData
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 16
-epochs = 250
-repeat = 3
+epochs = 5
+repeat = 1
 channel = 2
 K = 5
 angles = []
