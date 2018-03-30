@@ -252,7 +252,7 @@ class DS:
                 tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
                 t_f += f*8
                 t_tp += tp*8
-                dice.append((8*tp)/(f+8*tp))
+                dice.append((2 * tp) / (f + 2 * tp))
 
             else:  # FALSE
                 f = np.count_nonzero(np.add(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
