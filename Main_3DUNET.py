@@ -15,7 +15,7 @@ repeat = 3
 channel = 2
 K = 5
 angles = []
-scales = [0.5]
+scales = [0.7, 0.4]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, channel, K, angles, scales)
@@ -49,7 +49,7 @@ for fold in range(0, K):
         # get accuracy on test data####################################################################
         pred = model.predict(x_test)
         pred2 = model.predict(x_test2)
-        micro, macro = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
         x = round(x_test.shape[1] / 4)
         y = round(x_test.shape[2] / 4)
         z = round(x_test.shape[3] / 4)
@@ -58,13 +58,8 @@ for fold in range(0, K):
         # logging#######################################################################################
         logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
-        logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n\n')
-
-        logger.write('train2 accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
-        logger.write('test2 accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n\n')
-
-        logger.write('test 0.5*2 accuracy: \t' + str(model.evaluate(x_tmp, y_tmp)[1]) + '\n')
-        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '\n')
+        logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n')
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
 
         # save images to file#######################################################################
         logger.flush()

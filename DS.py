@@ -228,16 +228,18 @@ class DS:
     @staticmethod
     def post_process(logger, gt1, pred1, gt2, pred2):
         m = 1  # margin
-        t = 10  # threshold
+        t = 100  # threshold
         t_tp = 0
         t_f = 0
+        t_tp2 = 0
+        t_f2 = 0
         dice = []
 
         c = gt1.shape[0]
         x = gt1.shape[1]
         y = gt1.shape[2]
         z = gt1.shape[3]
-
+        logger.write('==================================================================\n')
         for i in range(0, c):
             margin_pred = np.around(pred1[i, :, :, :, 0])
             margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
@@ -252,6 +254,9 @@ class DS:
                 tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
                 t_f += f*8
                 t_tp += tp*8
+
+                t_f2 += f
+                t_tp2 += tp
                 dice.append((2 * tp) / (f + 2 * tp))
 
             else:  # FALSE
@@ -259,6 +264,9 @@ class DS:
                 tp = np.count_nonzero(np.multiply(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])))  # AND
                 t_f += f
                 t_tp += tp
+
+                t_f2 += f
+                t_tp2 += tp
                 dice.append((2 * tp) / (f + 2 * tp))
 
-        return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp)
+        return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp), (2 * t_tp2) / (t_f2 + 2 * t_tp2)
