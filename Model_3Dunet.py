@@ -149,7 +149,7 @@ def bwcl(y_true, y_pred):
     _epsilon = tf.convert_to_tensor(10e-8, y_pred.dtype.base_dtype)
     output = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
     output = tf.log(output / (1 - output))
-    return K.mean(tf.nn.weighted_cross_entropy_with_logits(y_true, output, 10), axis=-1)
+    return K.mean(tf.nn.weighted_cross_entropy_with_logits(y_true, output, 100), axis=-1)
 
 
 
