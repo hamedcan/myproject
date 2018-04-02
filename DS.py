@@ -63,7 +63,7 @@ class DS:
 
     def augment_zoom(self, count, images, label_maps, centers, scale):
         for j in scale:
-            print('DS - augmenting_zoom by scale: ', str(j))
+            # print('DS - augmenting_zoom by scale: ', str(j))
             for i in range(0, count):
                 # print('DS - zoom - image : ', i)
                 images.append(scipy.ndimage.interpolation.zoom(images[i], j))
@@ -74,7 +74,7 @@ class DS:
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
         for i in range(0, count):
-            print('DS - rotation - image : ', i)
+            # print('DS - rotation - image : ', i)
             for angle in self.angles:
                 images.append(scipy.ndimage.rotate(images[i], angle=-angle))
                 label_maps.append(scipy.ndimage.rotate(label_maps[i], angle=-angle))
@@ -133,7 +133,7 @@ class DS:
         train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
-            print("train sample ", i, " out of ", train_count)
+            # print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
 
             self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.5),
@@ -150,7 +150,7 @@ class DS:
 
         # ===============t================e====================s=================t================================
         for i in self.test_indexes[fold]:
-            print("test sample ", i, " out of ", train_count)
+            # print("test sample ", i, " out of ", train_count)
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
             self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.5),
                      np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)),

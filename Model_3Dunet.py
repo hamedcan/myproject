@@ -128,8 +128,8 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_2)
     conv7_2 = BatchNormalization()(conv7_2)
 
-    conv8 = concatenate([conv7_1, conv7_2], axis=4)
-    conv8 = Conv3D(n_labels, (1, 1, 1))(conv8)
+    # conv8 = concatenate([conv7_1, conv7_2], axis=4)
+    conv8 = Conv3D(n_labels, (1, 1, 1))(conv7_1)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
@@ -149,7 +149,7 @@ def bwcl(y_true, y_pred):
     _epsilon = tf.convert_to_tensor(10e-8, y_pred.dtype.base_dtype)
     output = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
     output = tf.log(output / (1 - output))
-    return K.mean(tf.nn.weighted_cross_entropy_with_logits(y_true, output, 5), axis=-1)
+    return K.mean(tf.nn.weighted_cross_entropy_with_logits(y_true, output, 10), axis=-1)
 
 
 
