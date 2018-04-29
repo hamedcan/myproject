@@ -5,8 +5,6 @@ import math
 import scipy.io
 import os
 from sklearn.model_selection import KFold
-import matplotlib.pyplot as plt
-from keras import backend as K
 from xlrd import open_workbook
 
 

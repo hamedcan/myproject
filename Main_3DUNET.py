@@ -31,8 +31,10 @@ logger.write('scales: ' + str(scales) + '\n')
 logger.write('channel: ' + str(channel) + '\n')
 logger.flush()
 
-# init_data = InitData.__call__()
+# pre train model##################################################################################
 
+
+####################################################################################################
 for fold in range(0, K):
     x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
