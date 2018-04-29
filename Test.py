@@ -9,7 +9,7 @@ width = [20, 20, 8]
 margin = 20
 channel = 1
 
-model = Model.get_model(open(".\pre" + '\info.txt', "a"), 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+model = Model.get_model(open('D:\pretrain.txt', "w"), 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
 
 data = PreTrain.getdata(width, margin)
 

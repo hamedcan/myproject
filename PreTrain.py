@@ -10,10 +10,10 @@ class PreTrain:
         data = []
         counter = 0
 
-        fileList = os.listdir(".\pdata")
+        fileList = os.listdir(".\matpdata")
         for file in fileList:
-            print(".\pdata\\" + file)
-            image = scipy.io.loadmat(".\pdata" + file)
+            print(".\matpdata\\" + file)
+            image = scipy.io.loadmat(".\matpdata\\" + file)
             image = image['X']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
 
@@ -23,5 +23,7 @@ class PreTrain:
                         data.append(
                             image[x - width[0]:x + width[0], y - width[1]:y + width[1], z - width[2]:z + width[2]])
                         counter += 1
+                        if counter%100==0:
+                            print(counter)
 
-        return np.reshape(np.array(data), ())
+        return np.reshape(np.array(data), (counter, width[0]*2, width[1]*2, width[2]*2, 1))
