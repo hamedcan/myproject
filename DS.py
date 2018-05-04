@@ -107,11 +107,19 @@ class DS:
         x_train2 = []
         y_train2 = []
 
+        x_train3 = []
+        y_train3 = []
+
         x_test = []
         y_test = []
 
         x_test2 = []
         y_test2 = []
+
+        x_test3 = []
+        y_test3 = []
+
+        scales = [0.5, 0.25]
 
         train_image = []
         train_label_map = []
@@ -134,10 +142,16 @@ class DS:
             # print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
 
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.5),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.5)),
-                     [round(train_center[i][0] * 0.5), round(train_center[i][1] * 0.5),
-                      round(train_center[i][2] * 0.5)], x_train2, y_train2)
+            self.add(scipy.ndimage.interpolation.zoom(train_image[i], scales[0]),
+                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], scales[0])),
+                     [round(train_center[i][0] * scales[0]), round(train_center[i][1] * scales[0]),
+                      round(train_center[i][2] * scales[0])], x_train2, y_train2)
+
+            self.add(scipy.ndimage.interpolation.zoom(train_image[i], scales[1]),
+                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], scales[1])),
+                     [round(train_center[i][0] * scales[1]), round(train_center[i][1] * scales[1]),
+                      round(train_center[i][2] * scales[1])], x_train3, y_train3)
+
         x_train = np.reshape(np.array(x_train),
                              (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
@@ -146,14 +160,22 @@ class DS:
                              (len(x_train2), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train2 = np.reshape(np.array(y_train2), (len(x_train2), patch_size[0], patch_size[1], patch_size[2], 1))
 
+        x_train3 = np.reshape(np.array(x_train3),
+                             (len(x_train2), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_train3 = np.reshape(np.array(y_train3), (len(x_train3), patch_size[0], patch_size[1], patch_size[2], 1))
         # ===============t================e====================s=================t================================
         for i in self.test_indexes[fold]:
             # print("test sample ", i, " out of ", train_count)
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.5),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)),
-                     [round(self.centers[i][0] * 0.5), round(self.centers[i][1] * 0.5),
-                      round(self.centers[i][2] * 0.5)], x_test2, y_test2)
+            self.add(scipy.ndimage.interpolation.zoom(self.images[i], scales[0]),
+                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], scales[0])),
+                     [round(self.centers[i][0] * scales[0]), round(self.centers[i][1] * scales[0]),
+                      round(self.centers[i][2] * scales[0])], x_test2, y_test2)
+
+            self.add(scipy.ndimage.interpolation.zoom(self.images[i], scales[1]),
+                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], scales[1])),
+                     [round(self.centers[i][0] * scales[1]), round(self.centers[i][1] * scales[1]),
+                      round(self.centers[i][2] * scales[1])], x_test3, y_test3)
 
 
         x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
@@ -163,7 +185,11 @@ class DS:
                              (len(x_test2), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test2 = np.reshape(np.array(y_test2), (len(x_test2), patch_size[0], patch_size[1], patch_size[2], 1))
 
-        return x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2
+        x_test3 = np.reshape(np.array(x_test3),
+                             (len(x_test2), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_test3 = np.reshape(np.array(y_test3), (len(x_test3), patch_size[0], patch_size[1], patch_size[2], 1))
+
+        return x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2, x_train3, y_train3, x_test3, y_test3
 
     @staticmethod
     def create_files(K, R, g_path):
@@ -224,7 +250,7 @@ class DS:
         y.append(label_map_final)
 
     @staticmethod
-    def post_process(logger, gt1, pred1, gt2, pred2):
+    def post_process(logger, gt1, pred1, gt2, pred2, gt3, pred3):
         m = 1  # margin
         t = 100  # threshold
         t_tp = 0
@@ -239,25 +265,41 @@ class DS:
         z = gt1.shape[3]
         logger.write('==================================================================\n')
         for i in range(0, c):
-            margin_pred = np.around(pred1[i, :, :, :, 0])
-            margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            margin_pred1 = np.around(pred1[i, :, :, :, 0])
+            margin_pred1[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            margin_gt = np.around(gt1[i, :, :, :, 0])
-            margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+            margin_gt1 = np.around(gt1[i, :, :, :, 0])
+            margin_gt1[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(np.count_nonzero(margin_gt))+'\n')
+            margin_pred2 = np.around(pred2[i, :, :, :, 0])
+            margin_pred2[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            if np.count_nonzero(margin_pred) >= t or np.count_nonzero(margin_gt) >= t:  # TRUE
-                f = np.count_nonzero(np.add(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
-                t_f += f*8
-                t_tp += tp*8
+            margin_gt2 = np.around(gt2[i, :, :, :, 0])
+            margin_gt2[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-                t_f2 += f
-                t_tp2 += tp
-                dice.append((2 * tp) / (f + 2 * tp))
+            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred1)) + '--' + str(np.count_nonzero(margin_gt1))+'\n')
 
-            else:  # FALSE
+            if np.count_nonzero(margin_pred1) >= t or np.count_nonzero(margin_gt1) >= t:  # TRUE
+                if np.count_nonzero(margin_pred2) >= t or np.count_nonzero(margin_gt2) >= t:
+                    f = np.count_nonzero(np.add(gt3[i, :, :, :, 0], np.around(pred3[i, :, :, :, 0])) == 1)  # XOR
+                    tp = np.count_nonzero(np.multiply(gt3[i, :, :, :, 0], np.around(pred3[i, :, :, :, 0])))  # AND
+                    t_f += f*64
+                    t_tp += tp*64
+
+                    t_f2 += f
+                    t_tp2 += tp
+                    dice.append((2 * tp) / (f + 2 * tp))
+
+                else:
+                    f = np.count_nonzero(np.add(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
+                    tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
+                    t_f += f*8
+                    t_tp += tp*8
+
+                    t_f2 += f
+                    t_tp2 += tp
+                    dice.append((2 * tp) / (f + 2 * tp))
+            else:
                 f = np.count_nonzero(np.add(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
                 tp = np.count_nonzero(np.multiply(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])))  # AND
                 t_f += f

@@ -9,7 +9,7 @@ from Init_data import InitData
 import scipy.io
 
 # initialization and prepare data set#########################################################
-patch_size = [40, 40, 16]
+patch_size = [24, 24, 8]
 batch_size = 16
 epochs = 150
 repeat = 3
@@ -36,7 +36,7 @@ logger.flush()
 
 ####################################################################################################
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2, x_train3, y_train3, x_test3, y_test3 = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     logger.write('contain:' + str(ds.train_indexes[fold]) + '\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
@@ -54,18 +54,17 @@ for fold in range(0, K):
         # get accuracy on test data####################################################################
         pred = model.predict(x_test)
         pred2 = model.predict(x_test2)
-        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        pred3 = model.predict(x_test3)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2, y_test3, pred3)
         x = round(x_test.shape[1] / 4)
         y = round(x_test.shape[2] / 4)
         z = round(x_test.shape[3] / 4)
-        x_tmp = scipy.ndimage.interpolation.zoom(x_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
-        y_tmp = scipy.ndimage.interpolation.zoom(y_test2[:, x:3 * x, y:3 * y, z:3 * z, :], (1, 2, 2, 2, 1))
         # logging#######################################################################################
         logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n')
         logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
-        # save images to file#######################################################################
+        # save images to file###########################################################################
         logger.flush()
 
         for i in range(0, x_test.shape[0]):
