@@ -54,8 +54,9 @@ def get_model(input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=
     conv8 = Conv3D(n_labels, (1, 1, 1))(conv7_1)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
+    adam = optimizers.Adam()
 
-    model.compile(optimizer='adam', loss='cross', metrics=[dice_coef])
+    model.compile(optimizer=adam, loss='acc', metrics=[dice_coef, 'acc'])
     return model
 
 
