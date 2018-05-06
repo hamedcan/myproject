@@ -9,14 +9,11 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
+    def __init__(self, path, patch_size, K=5):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
         self.K = K
-        self.angles = angles
-        self.scales = scales
-        self.channel = channel
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -59,43 +56,6 @@ class DS:
             self.train_indexes.append(train_index)
             self.test_indexes.append(test_index)
 
-    def augment_zoom(self, count, images, label_maps, centers, scale):
-        for j in scale:
-            # print('DS - augmenting_zoom by scale: ', str(j))
-            for i in range(0, count):
-                # print('DS - zoom - image : ', i)
-                images.append(scipy.ndimage.interpolation.zoom(images[i], j))
-                label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j)))
-                centers.append([round(centers[i][0] * j), round(centers[i][1] * j), round(centers[i][2] * j)])
-        return count * (len(scale) + 1)
-
-    def augment_rotation(self, count, images, label_maps, centers):
-        print('DS - augmenting__rotation')
-        for i in range(0, count):
-            # print('DS - rotation - image : ', i)
-            for angle in self.angles:
-                images.append(scipy.ndimage.rotate(images[i], angle=-angle))
-                label_maps.append(scipy.ndimage.rotate(label_maps[i], angle=-angle))
-                x, y = self.rotate(centers[i][0], centers[i][1], images[i].shape[0] / 2, images[i].shape[1] / 2,
-                                   (-angle / 180) * math.pi)
-                centers.append([x, y, centers[i][2]])
-        return count * (len(self.angles) + 1)
-
-    def augment_flip(self, count, images, label_maps, centers):
-        print('DS - augmenting__fliping')
-        for i in range(0, count):
-            # print('DS - fliping - image : ', i)
-            images.append(images[i][:, ::-1, :])
-            label_maps.append(label_maps[i][:, ::-1, :])
-            x, y = [centers[i][0], images[i].shape[1] - centers[i][1]]
-            centers.append([x, y, centers[i][2]])
-        return count * 2
-
-    def rotate(self, px, py, ox, oy, angle):
-        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
-        return math.ceil(qx), math.ceil(qy)
-
     def get_data(self, fold):
         print('DS - start getting data')
         train_count = len(self.train_indexes[fold])
@@ -131,15 +91,7 @@ class DS:
             train_image.append(self.images[i])
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
-        # ================================zoom out=========================================
-        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
-        # ================================rotation=========================================
-        train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
-        # ==================================flip===========================================
-        train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
-        # ======================================================================================================
         for i in range(0, train_count):
-            # print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
 
             self.add(scipy.ndimage.interpolation.zoom(train_image[i], scales[0]),
@@ -163,9 +115,7 @@ class DS:
         x_train3 = np.reshape(np.array(x_train3),
                              (len(x_train2), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train3 = np.reshape(np.array(y_train3), (len(x_train3), patch_size[0], patch_size[1], patch_size[2], 1))
-        # ===============t================e====================s=================t================================
         for i in self.test_indexes[fold]:
-            # print("test sample ", i, " out of ", train_count)
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
             self.add(scipy.ndimage.interpolation.zoom(self.images[i], scales[0]),
                      np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], scales[0])),
@@ -250,9 +200,9 @@ class DS:
         y.append(label_map_final)
 
     @staticmethod
-    def post_process(logger, gt1, pred1, gt2, pred2, gt3, pred3):
-        m = 1  # margin
-        t = 100  # threshold
+    def post_process(gt1, pred1, gt2, pred2, gt3, pred3):
+        m = 1
+        t = 100
         t_tp = 0
         t_f = 0
         t_tp2 = 0
@@ -263,7 +213,7 @@ class DS:
         x = gt1.shape[1]
         y = gt1.shape[2]
         z = gt1.shape[3]
-        logger.write('==================================================================\n')
+        print('==================================================================\n')
         for i in range(0, c):
             margin_pred1 = np.around(pred1[i, :, :, :, 0])
             margin_pred1[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
@@ -277,7 +227,7 @@ class DS:
             margin_gt2 = np.around(gt2[i, :, :, :, 0])
             margin_gt2[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred1)) + '--' + str(np.count_nonzero(margin_gt1))+'\n')
+            print('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred1)) + '--' + str(np.count_nonzero(margin_gt1))+'\n')
 
             if np.count_nonzero(margin_pred1) >= t or np.count_nonzero(margin_gt1) >= t:  # TRUE
                 if np.count_nonzero(margin_pred2) >= t or np.count_nonzero(margin_gt2) >= t:
