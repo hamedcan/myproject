@@ -9,7 +9,7 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
+    def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[], flip = False):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
@@ -17,6 +17,7 @@ class DS:
         self.angles = angles
         self.scales = scales
         self.channel = channel
+        self.flip = flip
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -128,7 +129,8 @@ class DS:
         # ================================rotation=========================================
         train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
         # ==================================flip===========================================
-        train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
+        if self.flip:
+            train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
             # print("train sample ", i, " out of ", train_count)

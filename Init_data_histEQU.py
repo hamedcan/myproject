@@ -47,7 +47,7 @@ class InitData(metaclass=Singleton):
             image = image['enhanced']
             image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
             # image = self.CLAHE3D(image)
-            # image = self.eqhist3D(image)
+            image = self.eqhist3D(image)
             # image = self.gabour3D(image)
 
             nz = np.nonzero(label_map)
