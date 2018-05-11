@@ -9,6 +9,7 @@ patch_size = [40, 40, 16]
 batch_size = 16
 epochs = 100
 channel = 1
+repeat=3
 K = 5
 angles = []
 scales = []
@@ -25,71 +26,200 @@ logger = ds.create_files(K,1,g_path)
 #9###################################################################################################
 scales = []
 angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
 logger.write("***************************************flipp*********************************************\n")
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
-    logger.write('===================fold: ' + str(fold) + '===================\n')
-    Keras.clear_session()
-    model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
-                  validation_data=(x_test, y_test), verbose=2)
-    pred = model.predict(x_test)
-    pred2 = model.predict(x_test2)
-    micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
-    logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
-    logger.flush()
-    del model
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
 ####################################################################################################
 #10###################################################################################################
 scales = [2,4,0.25,0.5]
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
 logger.write("***************************************flip and 2,4,0.25,0.5*********************************************\n")
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
-    logger.write('===================fold: ' + str(fold) + '===================\n')
-    Keras.clear_session()
-    model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
-                  validation_data=(x_test, y_test), verbose=2)
-    pred = model.predict(x_test)
-    pred2 = model.predict(x_test2)
-    micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
-    logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
-    logger.flush()
-    del model
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
 ####################################################################################################
 #11###################################################################################################
 scales = [2,0.5]
 angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
 logger.write("***************************************flip and 2,0.5*********************************************\n")
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
-    logger.write('===================fold: ' + str(fold) + '===================\n')
-    Keras.clear_session()
-    model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
-                  validation_data=(x_test, y_test), verbose=2)
-    pred = model.predict(x_test)
-    pred2 = model.predict(x_test2)
-    micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
-    logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
-    logger.flush()
-    del model
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
 ####################################################################################################
 #12###################################################################################################
 scales = [4,0.25]
 angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
 logger.write("***************************************flip and 4,0.25*********************************************\n")
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
-    logger.write('===================fold: ' + str(fold) + '===================\n')
-    Keras.clear_session()
-    model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
-                  validation_data=(x_test, y_test), verbose=2)
-    pred = model.predict(x_test)
-    pred2 = model.predict(x_test2)
-    micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
-    logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
-    logger.flush()
-    del model
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+####################################################################################################
+scales = [0.5]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip 0.5*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+####################################################################################################
+scales = [2]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip 2*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+
+
+scales = [4]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip 4*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+
+
+
+scales = [0.25]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip 0.25*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+
+
+
+#11###################################################################################################
+scales = [2,4]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip and 2,4*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
+####################################################################################################
+#11###################################################################################################
+scales = [0.25,0.5]
+angles = []
+ds = DS('.\data\\', patch_size, channel, K, angles, scales,flip=True)
+logger.write("***************************************flip and 0.25,0.5*********************************************\n")
+for fold in range(0, K):
+    for repeat_count in range(0, repeat):
+        x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+        logger.write('===================fold: ' + str(fold) + '===================\n')
+        Keras.clear_session()
+        model = Model_3Dunet.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
+                   validation_data=(x_test, y_test), verbose=2)
+        pred = model.predict(x_test)
+        pred2 = model.predict(x_test2)
+        micro, macro, macro2 = DS.post_process(logger, y_test, pred, y_test2, pred2)
+        logger.write('my method: ' + str(micro) + '  ' + str(macro) + '  ' + str(macro2) + '\n')
+        logger.flush()
+        del model
 ####################################################################################################

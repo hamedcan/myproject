@@ -9,6 +9,7 @@ from Init_data import InitData
 
 
 def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size=(3, 3, 3), n_labels=1):
+
     """
     Builds the 3D UNet Keras model.
     :param input_shape: Shape of the input data (n_chanels, x_size, y_size, z_size).
@@ -135,7 +136,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
 
     adam = optimizers.Adam()
 
-    model.compile(optimizer=adam, loss=bwcl, metrics=[dice_coef, 'acc'])
+    model.compile(optimizer=adam, loss='cross', metrics=[dice_coef, 'acc'])
     return model
 
 
