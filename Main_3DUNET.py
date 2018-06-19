@@ -9,14 +9,14 @@ from Init_data import InitData
 import scipy.io
 
 # initialization and prepare data set#########################################################
-patch_size = [24, 24, 8]
+patch_size = [16, 16, 8]
 batch_size = 16
 epochs = 150
 repeat = 5
-channel = 1
+channel = 2
 K = 5
 angles = []
-scales = []
+scales = [0.5]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, channel, K, angles, scales)
