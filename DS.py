@@ -30,6 +30,8 @@ class DS:
         self.load()
         self.generate_k_fold_indexes()
 
+        # self.calculate_complexity()
+
     def load(self):
         print('DS - loading')
         wb = open_workbook(self.path + 'data.xlsx')
@@ -268,3 +270,54 @@ class DS:
                 dice.append((2 * tp) / (f + 2 * tp))
 
         return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp), (2 * t_tp2) / (t_f2 + 2 * t_tp2)
+
+    def post_process2(self, fold, logger, gt, pred):
+        m = 1  # margin
+
+        c = gt.shape[0]
+        x = gt.shape[1]
+        y = gt.shape[2]
+        z = gt.shape[3]
+        logger.write('==================================================================\n')
+        for i in range(0, c):
+            temp_pred = np.around(pred[i, :, :, :, 0])
+            margin_pred = np.around(pred[i, :, :, :, 0])
+            margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+
+            temp_gt = gt[i, :, :, :, 0]
+            margin_gt = np.around(gt[i, :, :, :, 0])
+            margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+
+            tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
+            tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
+            fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
+            fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
+
+            dice = (2 * tp) / ((fp + fn) + 2 * tp)
+
+            logger.write("for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(fp) + "," + str(fn) + "," + str(np.count_nonzero(margin_pred)) + "," + str(np.count_nonzero(margin_gt)) + "," + str(dice)+"\n")
+
+    def complexity(self, counter):
+        a = 0
+        gt = self.label_maps[counter]
+        for i in range(1, gt.shape[0]-1):
+            for j in range(1, gt.shape[1]-1):
+                for k in range(1, gt.shape[2]-1):
+                    if gt[i, j, k] == 1 and (gt[i+1, j, k] < 1 or gt[i-1, j, k] < 1 or gt[i, j+1, k] < 1 or gt[i, j-1, k] < 1 or gt[i, j, k+1] < 1 or gt[i, j, k-1] < 1):
+                        a += 1
+
+        v = np.count_nonzero(gt[:, :, :] == 1)
+
+        return float(a)/float(v)
+
+    def calculate_complexity(self):
+        print("DS - Calculating complexity")
+        file = open('\comp.txt', "w+")
+        for i in range(0,self.count):
+            complexity = str(self.complexity(i))
+            file.write(str(i) + ", " + complexity)
+            print("complexity for: " + str(i) + ", " + complexity)
+
+
+
+
