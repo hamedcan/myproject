@@ -21,7 +21,7 @@ g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, channel, K, angles, scales)
 logger = ds.create_files(K, repeat, g_path)
-model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], 1))
+model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
 logger.write('batch size: ' + str(batch_size) + '\n')
 logger.write('epochs: ' + str(epochs) + '\n')
 logger.write('repeat: ' + str(repeat) + '\n')
@@ -53,7 +53,6 @@ for fold in range(0, K):
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
         pred = model.predict(x_test)
-        pred2 = model.predict(x_test2)
         ds.post_process2(fold, logger, y_test, pred)
 # logging#######################################################################################
         logger.write('==========================================\n')

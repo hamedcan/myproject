@@ -129,7 +129,7 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_2 = BatchNormalization()(conv7_2)
 
     conv8 = concatenate([conv7_1, conv7_2], axis=4)
-    # conv8 = Conv3D(n_labels, (1, 1, 1))(conv7_1)
+    conv8 = Conv3D(n_labels, (1, 1, 1))(conv8)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
