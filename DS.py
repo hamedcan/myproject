@@ -271,7 +271,7 @@ class DS:
 
         return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp), (2 * t_tp2) / (t_f2 + 2 * t_tp2)
 
-    def post_process2(self, fold, logger, gt, pred):
+    def post_process2(self, fold, logger, gt, pred, hamed):
         m = 1  # margin
 
         c = gt.shape[0]
@@ -295,7 +295,7 @@ class DS:
 
             dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
-            logger.write("for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(fp) + "," + str(fn) + "," + str(np.count_nonzero(margin_pred)) + "," + str(np.count_nonzero(margin_gt)) + "," + str(dice)+"\n")
+            logger.write(hamed + " for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(fp) + "," + str(fn) + "," + str(np.count_nonzero(margin_pred)) + "," + str(np.count_nonzero(margin_gt)) + "," + str(dice)+"\n")
 
     def complexity(self, counter):
         a = 0

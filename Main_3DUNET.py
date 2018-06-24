@@ -52,8 +52,10 @@ for fold in range(0, K):
                   validation_data=(x_test2, y_test2), verbose=2)
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
+        pred = model.predict(x_test)
+        ds.post_process2(fold, logger, y_test, pred, '1X')
         pred = model.predict(x_test2)
-        ds.post_process2(fold, logger, y_test2, pred)
+        ds.post_process2(fold, logger, y_test2, pred, '2X')
 # logging#######################################################################################
         logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
