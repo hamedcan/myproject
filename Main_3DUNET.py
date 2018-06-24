@@ -9,7 +9,7 @@ from Init_data import InitData
 import scipy.io
 
 # initialization and prepare data set#########################################################
-patch_size = [16, 16, 8]
+patch_size = [40, 40, 16]
 batch_size = 16
 epochs = 150
 repeat = 5
@@ -49,37 +49,37 @@ for fold in range(0, K):
         path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
         # train model##################################################################################
         model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
-                  validation_data=(x_test, y_test), verbose=2)
+                  validation_data=(x_test2, y_test2), verbose=2)
         model.save_weights(path + r'\model.hd5')
         # get accuracy on test data####################################################################
-        pred = model.predict(x_test)
-        ds.post_process2(fold, logger, y_test, pred)
+        pred = model.predict(x_test2)
+        ds.post_process2(fold, logger, y_test2, pred)
 # logging#######################################################################################
         logger.write('==========================================\n')
-        logger.write('train accuracy:\t' + str(model.evaluate(x_train, y_train)[1]) + '\n')
-        logger.write('test accuracy: \t' + str(model.evaluate(x_test, y_test)[1]) + '\n')
+        logger.write('train accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
+        logger.write('test accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n')
         # save images to file#######################################################################
         logger.flush()
 
-        for i in range(0, x_test.shape[0]):
+        for i in range(0, x_test2.shape[0]):
             for j in range(0, patch_size[2]):
 
                 image = np.zeros([patch_size[0], patch_size[1], 3])
-                image[:, :, 0] = x_test[i, :, :, j, 0] + (pred[i, :, :, j, 0]/4)  # red for predicted by model
-                image[:, :, 1] = x_test[i, :, :, j, 0]
-                image[:, :, 2] = x_test[i, :, :, j, 0]
+                image[:, :, 0] = x_test2[i, :, :, j, 0] + (pred[i, :, :, j, 0]/4)  # red for predicted by model
+                image[:, :, 1] = x_test2[i, :, :, j, 0]
+                image[:, :, 2] = x_test2[i, :, :, j, 0]
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-pred.png', image)
 
                 image = np.zeros([patch_size[0], patch_size[1], 3])
-                image[:, :, 0] = x_test[i, :, :, j, 0]
-                image[:, :, 1] = x_test[i, :, :, j, 0] + (y_test[i, :, :, j, 0]/4)  # green for ground truth
-                image[:, :, 2] = x_test[i, :, :, j, 0]
+                image[:, :, 0] = x_test2[i, :, :, j, 0]
+                image[:, :, 1] = x_test2[i, :, :, j, 0] + (y_test2[i, :, :, j, 0]/4)  # green for ground truth
+                image[:, :, 2] = x_test2[i, :, :, j, 0]
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-gt.png', image)
 
                 image = np.zeros([patch_size[0], patch_size[1], 3])
-                image[:, :, 0] = x_test[i, :, :, j, 0]
-                image[:, :, 1] = x_test[i, :, :, j, 0]
-                image[:, :, 2] = x_test[i, :, :, j, 0]
+                image[:, :, 0] = x_test2[i, :, :, j, 0]
+                image[:, :, 1] = x_test2[i, :, :, j, 0]
+                image[:, :, 2] = x_test2[i, :, :, j, 0]
                 plt.imsave(path + r'\test' + '\im-' + str(i) + '-' + str(j) + '-orig.png', image)
 
 logger.close()
