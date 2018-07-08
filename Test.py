@@ -1,57 +1,106 @@
+import random
+import cv2
 import numpy as np
+import math
+import scipy.io
+import numpy as np
+import matplotlib.pyplot as plt
+from xlrd import open_workbook
 
 
-def complexity(gt):
-    a = 0
-
-    for i in range(0, gt.shape[0]):
-        for j in range(0, gt.shape[1]):
-            for k in range(0, gt.shape[2]):
-                if gt[i, j, k] == 1 and (
-                                                gt[i + 1, j, k] < 1 or gt[i - 1, j, k] < 1 or
-                                            gt[i, j + 1, k] < 1 or gt[i, j - 1, k] < 1 or gt[i, j, k + 1] < 1 or gt[i, j, k - 1] < 1):
-                    a += 1
-
-    v = np.count_nonzero(gt[:, :, :] > 0)
-
-    return float(a ** 3) / float(v ** 2)
 
 
-gt = np.zeros((5, 5, 5))
-pred = np.zeros((5, 5, 5))
-pred[2,2,2] = 1
-pred[2,2,3] = 1
-pred[2,2,1] = 1
 
-gt[2,2,2] = 1
-gt[2,2,0] = 1
-gt[2,2,1] = 1
+def build_filters():
+    filters = []
+    ksize = 15
+    for theta in np.arange(0, np.pi, np.pi / 16):
+        kern = cv2.getGaborKernel((ksize, ksize), 4.0, theta, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+    kern /= 1.5 * kern.sum()
+    filters.append(kern)
+    return filters
 
-m = 1  # margin
 
-x = gt.shape[0]
-y = gt.shape[1]
-z = gt.shape[2]
+def gabour_filter(img):
+    filters = build_filters()
+    accum = np.zeros_like(img)
+    for kern in filters:
+        fimg = cv2.filter2D(img, cv2.CV_8UC3, kern)
+    np.maximum(accum, fimg, accum)
+    return accum
 
-margin_pred = np.around(pred[:, :, :])
-margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-margin_gt = np.around(gt[:, :, :])
-margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+def gabour3D(image):
+    for i in range(0, image.shape[2]):
+        data = image[:, :, i]
+        data *= 255
+        data = data.astype(np.uint8)
+        data = gabour_filter(data)
+        data = data.astype(np.float64)
+        data /= 255
+        image[:, :, i] = data
+    return image
 
-tp = np.count_nonzero(np.multiply(gt[:, :, :], np.around(pred[:, :, :])))  # AND
-tn = np.count_nonzero(np.add(gt[:, :, :], np.around(pred[:, :, :])) == 0)
-fp = np.count_nonzero(np.bitwise_and(gt[:, :, :] == 0, pred[:, :, :] == 1))
-fn = np.count_nonzero(np.bitwise_and(gt[:, :, :] == 1, pred[:, :, :] == 0))
 
-comp = complexity(gt)
-dice = (2 * tp) / ((fp + fn) + 2 * tp)
+def eqhist3D(image):
+    for i in range(0, image.shape[2]):
+        data = image[:, :, i]
+        data *= 255
+        data = data.astype(np.uint8)
+        data = cv2.equalizeHist(data)
+        data = data.astype(np.float64)
+        data /= 255
+        image[:, :, i] = data
+    return image
 
-print("tp " + str(tp))
-print("tn " + str(tn))
-print("fn " + str(fn))
-print("fp " + str(fp))
-print("margin pred count " + str(np.count_nonzero(margin_pred)))
-print("margin gt count " + str(np.count_nonzero(margin_gt)))
-print("complexity " + str(comp))
-print("dice " + str(dice))
+
+def CLAHE3D(image):
+    for i in range(0, image.shape[2]):
+        data = image[:, :, i]
+        data *= 255
+        data = data.astype(np.uint8)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        data = clahe.apply(data)
+        data = data.astype(np.float64)
+        data /= 255
+        image[:, :, i] = data
+    return image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+path = '.\data\\'
+centers = []
+count = 0
+data = []
+wb = open_workbook(path + 'data.xlsx')
+for s in wb.sheets():
+    nrows = s._dimnrows
+    file_name = [''] * nrows
+    for i in range(nrows):
+        centers.append([int(s.cell(i, 4).value), int(s.cell(i, 3).value), int(s.cell(i, 5).value)])
+        file_name[i] = s.cell(i, 0).value
+    count = nrows
+
+volname = file_name[25]
+
+image = scipy.io.loadmat('.\data\enhanced_' + volname + '.mat')
+image = image['enhanced']
+image = np.reshape(image, (image.shape[0], image.shape[1], image.shape[3]))
+# image = CLAHE3D(image)
+# image = eqhist3D(image)
+image = gabour3D(image)
+plt.imshow(image[:,:,20], cmap='gray')
+plt.show()

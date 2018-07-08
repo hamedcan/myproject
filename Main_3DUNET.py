@@ -9,7 +9,7 @@ from Init_data import InitData
 import scipy.io
 
 # initialization and prepare data set#########################################################
-patch_size = [40, 40, 16]
+patch_size = [32, 32, 16]
 batch_size = 16
 epochs = 150
 repeat = 5
@@ -36,7 +36,7 @@ logger.flush()
 
 ####################################################################################################
 for fold in range(0, K):
-    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2 = ds.get_data(fold)
+    x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2, x_train3, y_train3, x_test3, y_test3, x_train4, y_train4, x_test4, y_test4 = ds.get_data(fold)
     logger.write('===================fold: ' + str(fold) + '===================\n')
     logger.write('contain:' + str(ds.train_indexes[fold]) + '\n\n')
     print('===================fold: ' + str(fold) + '===================\n')
@@ -54,8 +54,16 @@ for fold in range(0, K):
         # get accuracy on test data####################################################################
         pred = model.predict(x_test)
         ds.post_process2(fold, logger, y_test, pred, '1X')
+
         pred = model.predict(x_test2)
         ds.post_process2(fold, logger, y_test2, pred, '2X')
+
+        pred = model.predict(x_test3)
+        ds.post_process2(fold, logger, y_test3, pred, '3X')
+
+        pred = model.predict(x_test4)
+        ds.post_process2(fold, logger, y_test4, pred, '4X')
+
 # logging#####################################################################################
         logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
