@@ -303,12 +303,12 @@ class DS:
         for i in range(1, gt.shape[0]-1):
             for j in range(1, gt.shape[1]-1):
                 for k in range(1, gt.shape[2]-1):
-                    if gt[i, j, k] == 1 and (gt[i+1, j, k] < 1 or gt[i-1, j, k] < 1 or gt[i, j+1, k] < 1 or gt[i, j-1, k] < 1 or gt[i, j, k+1] < 1 or gt[i, j, k-1] < 1):
+                    if gt[i, j, k] > 0 and (gt[i+1, j, k] < 1 or gt[i-1, j, k] < 1 or gt[i, j+1, k] < 1 or gt[i, j-1, k] < 1 or gt[i, j, k+1] < 1 or gt[i, j, k-1] < 1):
                         a += 1
 
-        v = np.count_nonzero(gt[:, :, :] == 1)
+        v = np.count_nonzero(gt[:, :, :] > 0)
 
-        return float(a)/float(v)
+        return float(a**3)/float(v**2)
 
     def calculate_complexity(self):
         print("DS - Calculating complexity")

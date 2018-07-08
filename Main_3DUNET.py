@@ -56,11 +56,11 @@ for fold in range(0, K):
         ds.post_process2(fold, logger, y_test, pred, '1X')
         pred = model.predict(x_test2)
         ds.post_process2(fold, logger, y_test2, pred, '2X')
-# logging#######################################################################################
+# logging#####################################################################################
         logger.write('==========================================\n')
         logger.write('train accuracy:\t' + str(model.evaluate(x_train2, y_train2)[1]) + '\n')
         logger.write('test accuracy: \t' + str(model.evaluate(x_test2, y_test2)[1]) + '\n')
-        # save images to file#######################################################################
+        # save images to file##################################################################
         logger.flush()
 
         for i in range(0, x_test2.shape[0]):
