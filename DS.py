@@ -62,14 +62,19 @@ class DS:
             self.test_indexes.append(test_index)
 
     def augment_zoom(self, count, images, label_maps, centers, scale):
+        rejected = 0
         for j in scale:
             # print('DS - augmenting_zoom by scale: ', str(j))
             for i in range(0, count):
                 # print('DS - zoom - image : ', i)
-                images.append(scipy.ndimage.interpolation.zoom(images[i], j))
-                label_maps.append(np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j)))
-                centers.append([round(centers[i][0] * j), round(centers[i][1] * j), round(centers[i][2] * j)])
-        return count * (len(scale) + 1)
+                new_image = scipy.ndimage.interpolation.zoom(images[i], j)
+                new_map = np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j))
+                if np.count_nonzero(new_map) > 50:
+                    rejected += 1
+                    images.append(new_image)
+                    label_maps.append(new_map)
+                    centers.append([round(centers[i][0] * j), round(centers[i][1] * j), round(centers[i][2] * j)])
+        return (count * (len(scale) + 1)) - rejected
 
     def augment_rotation(self, count, images, label_maps, centers):
         print('DS - augmenting__rotation')
