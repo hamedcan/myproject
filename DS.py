@@ -109,23 +109,12 @@ class DS:
         train_count = len(self.train_indexes[fold])
         test_count = len(self.test_indexes[fold])
 
+        scales = [0.75, 0.5]
+
         x_train = []
         y_train = []
-
-        x_train3 = []
-        y_train3 = []
-
-        x_train4 = []
-        y_train4 = []
-
         x_test = []
         y_test = []
-
-        x_test3 = []
-        y_test3 = []
-
-        x_test4 = []
-        y_test4 = []
 
         train_image = []
         train_label_map = []
@@ -145,62 +134,34 @@ class DS:
         train_count = self.augment_flip(train_count, train_image, train_label_map, train_center)
         # ======================================================================================================
         for i in range(0, train_count):
-            # print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
-
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.75),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.75)),
-                     [round(train_center[i][0] * 0.75), round(train_center[i][1] * 0.75),
-                      round(train_center[i][2] * 0.75)], x_train3, y_train3)
-
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.5),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.5)),
-                     [round(train_center[i][0] * 0.5), round(train_center[i][1] * 0.5),
-                      round(train_center[i][2] * 0.5)], x_train4, y_train4)
-
-
-
-
-        x_train = np.reshape(np.array(x_train),
-                             (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_train3 = np.reshape(np.array(x_train3),
-                             (len(x_train3), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_train3 = np.reshape(np.array(y_train3), (len(x_train3), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_train4 = np.reshape(np.array(x_train4),
-                             (len(x_train4), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_train4 = np.reshape(np.array(y_train4), (len(x_train4), patch_size[0], patch_size[1], patch_size[2], 1))
-
+            x_train = np.reshape(np.array(x_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
+            y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
         # ===============t================e====================s=================t================================
+        t_x = []
+        t_y = []
         for i in self.test_indexes[fold]:
-            # print("test sample ", i, " out of ", train_count)
-            self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
+            self.add(self.images[i], self.label_maps[i], self.centers[i], t_x, t_y)
 
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.75),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.75)),
-                     [round(self.centers[i][0] * 0.75), round(self.centers[i][1] * 0.75),
-                      round(self.centers[i][2] * 0.75)], x_test3, y_test3)
+        t_x = np.reshape(np.array(t_x),(len(t_x), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        t_y = np.reshape(np.array(t_y), (len(t_y), patch_size[0], patch_size[1], patch_size[2], 1))
+        x_test.append(t_x)
+        y_test.append(t_y)
 
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.5),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)),
-                     [round(self.centers[i][0] * 0.5), round(self.centers[i][1] * 0.5),
-                      round(self.centers[i][2] * 0.5)], x_test4, y_test4)
+        for j in scales:
+            t_x = []
+            t_y = []
+            for i in self.test_indexes[fold]:
+                self.add(scipy.ndimage.interpolation.zoom(self.images[i], j),
+                         np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], j)),
+                         [round(self.centers[i][0] * j), round(self.centers[i][1] * j),
+                          round(self.centers[i][2] * j)], t_x, t_y)
+            t_x = np.reshape(np.array(t_x), (len(t_x), patch_size[0], patch_size[1], patch_size[2], self.channel))
+            t_y = np.reshape(np.array(t_y), (len(t_y), patch_size[0], patch_size[1], patch_size[2], 1))
+            x_test.append(t_x)
+            y_test.append(t_y)
 
-
-        x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_test = np.reshape(np.array(y_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_test3 = np.reshape(np.array(x_test3),
-                             (len(x_test3), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_test3 = np.reshape(np.array(y_test3), (len(x_test3), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_test4 = np.reshape(np.array(x_test4),
-                             (len(x_test4), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_test4 = np.reshape(np.array(y_test4), (len(x_test4), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        return x_train, y_train, x_test, y_test, x_train3, y_train3, x_test3, y_test3, x_train4, y_train4, x_test4, y_test4
+        return x_train, y_train, x_test, y_test
 
     @staticmethod
     def create_files(K, R, g_path):
@@ -282,13 +243,14 @@ class DS:
             margin_gt = np.around(gt1[i, :, :, :, 0])
             margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(np.count_nonzero(margin_gt))+'\n')
+            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(
+                np.count_nonzero(margin_gt)) + '\n')
 
             if np.count_nonzero(margin_pred) >= t or np.count_nonzero(margin_gt) >= t:  # TRUE
                 f = np.count_nonzero(np.add(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
                 tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
-                t_f += f*8
-                t_tp += tp*8
+                t_f += f * 8
+                t_tp += tp * 8
 
                 t_f2 += f
                 t_tp2 += tp
@@ -330,29 +292,29 @@ class DS:
 
             dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
-            logger.write(hamed + " for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(fp) + "," + str(fn) + "," + str(np.count_nonzero(margin_pred)) + "," + str(np.count_nonzero(margin_gt)) + "," + str(dice)+"\n")
+            logger.write(
+                hamed + " for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(
+                    fp) + "," + str(fn) + "," + str(np.count_nonzero(margin_pred)) + "," + str(
+                    np.count_nonzero(margin_gt)) + "," + str(dice) + "\n")
 
     def complexity(self, counter):
         a = 0
         gt = self.label_maps[counter]
-        for i in range(1, gt.shape[0]-1):
-            for j in range(1, gt.shape[1]-1):
-                for k in range(1, gt.shape[2]-1):
-                    if gt[i, j, k] > 0 and (gt[i+1, j, k] < 1 or gt[i-1, j, k] < 1 or gt[i, j+1, k] < 1 or gt[i, j-1, k] < 1 or gt[i, j, k+1] < 1 or gt[i, j, k-1] < 1):
+        for i in range(1, gt.shape[0] - 1):
+            for j in range(1, gt.shape[1] - 1):
+                for k in range(1, gt.shape[2] - 1):
+                    if gt[i, j, k] > 0 and (gt[i + 1, j, k] < 1 or gt[i - 1, j, k] < 1 or gt[i, j + 1, k] < 1 or gt[
+                        i, j - 1, k] < 1 or gt[i, j, k + 1] < 1 or gt[i, j, k - 1] < 1):
                         a += 1
 
         v = np.count_nonzero(gt[:, :, :] > 0)
 
-        return float(a**3)/float(v**2)
+        return float(a ** 3) / float(v ** 2)
 
     def calculate_complexity(self):
         print("DS - Calculating complexity")
         file = open('\comp.txt', "w+")
-        for i in range(0,self.count):
+        for i in range(0, self.count):
             complexity = str(self.complexity(i))
             file.write(str(i) + ", " + complexity)
             print("complexity for: " + str(i) + ", " + complexity)
-
-
-
-
