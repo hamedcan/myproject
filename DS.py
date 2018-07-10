@@ -111,9 +111,6 @@ class DS:
         x_train = []
         y_train = []
 
-        x_train2 = []
-        y_train2 = []
-
         x_train3 = []
         y_train3 = []
 
@@ -122,9 +119,6 @@ class DS:
 
         x_test = []
         y_test = []
-
-        x_test2 = []
-        y_test2 = []
 
         x_test3 = []
         y_test3 = []
@@ -153,20 +147,15 @@ class DS:
             # print("train sample ", i, " out of ", train_count)
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
 
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.8),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.8)),
-                     [round(train_center[i][0] * 0.8), round(train_center[i][1] * 0.8),
-                      round(train_center[i][2] * 0.8)], x_train2, y_train2)
+            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.75),
+                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.75)),
+                     [round(train_center[i][0] * 0.75), round(train_center[i][1] * 0.75),
+                      round(train_center[i][2] * 0.75)], x_train3, y_train3)
 
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.6),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.6)),
-                     [round(train_center[i][0] * 0.6), round(train_center[i][1] * 0.6),
-                      round(train_center[i][2] * 0.6)], x_train3, y_train3)
-
-            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.4),
-                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.4)),
-                     [round(train_center[i][0] * 0.4), round(train_center[i][1] * 0.4),
-                      round(train_center[i][2] * 0.4)], x_train4, y_train4)
+            self.add(scipy.ndimage.interpolation.zoom(train_image[i], 0.5),
+                     np.around(scipy.ndimage.interpolation.zoom(train_label_map[i], 0.5)),
+                     [round(train_center[i][0] * 0.5), round(train_center[i][1] * 0.5),
+                      round(train_center[i][2] * 0.5)], x_train4, y_train4)
 
 
 
@@ -174,10 +163,6 @@ class DS:
         x_train = np.reshape(np.array(x_train),
                              (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_train2 = np.reshape(np.array(x_train2),
-                             (len(x_train2), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_train2 = np.reshape(np.array(y_train2), (len(x_train2), patch_size[0], patch_size[1], patch_size[2], 1))
 
         x_train3 = np.reshape(np.array(x_train3),
                              (len(x_train3), patch_size[0], patch_size[1], patch_size[2], self.channel))
@@ -192,28 +177,19 @@ class DS:
             # print("test sample ", i, " out of ", train_count)
             self.add(self.images[i], self.label_maps[i], self.centers[i], x_test, y_test)
 
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.8),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.8)),
-                     [round(self.centers[i][0] * 0.8), round(self.centers[i][1] * 0.8),
-                      round(self.centers[i][2] * 0.8)], x_test2, y_test2)
+            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.75),
+                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.75)),
+                     [round(self.centers[i][0] * 0.75), round(self.centers[i][1] * 0.75),
+                      round(self.centers[i][2] * 0.75)], x_test3, y_test3)
 
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.6),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.6)),
-                     [round(self.centers[i][0] * 0.6), round(self.centers[i][1] * 0.6),
-                      round(self.centers[i][2] * 0.6)], x_test3, y_test3)
-
-            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.4),
-                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.4)),
-                     [round(self.centers[i][0] * 0.4), round(self.centers[i][1] * 0.4),
-                      round(self.centers[i][2] * 0.4)], x_test4, y_test4)
+            self.add(scipy.ndimage.interpolation.zoom(self.images[i], 0.5),
+                     np.around(scipy.ndimage.interpolation.zoom(self.label_maps[i], 0.5)),
+                     [round(self.centers[i][0] * 0.5), round(self.centers[i][1] * 0.5),
+                      round(self.centers[i][2] * 0.5)], x_test4, y_test4)
 
 
         x_test = np.reshape(np.array(x_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test = np.reshape(np.array(y_test), (len(x_test), patch_size[0], patch_size[1], patch_size[2], 1))
-
-        x_test2 = np.reshape(np.array(x_test2),
-                             (len(x_test2), patch_size[0], patch_size[1], patch_size[2], self.channel))
-        y_test2 = np.reshape(np.array(y_test2), (len(x_test2), patch_size[0], patch_size[1], patch_size[2], 1))
 
         x_test3 = np.reshape(np.array(x_test3),
                              (len(x_test3), patch_size[0], patch_size[1], patch_size[2], self.channel))
@@ -223,7 +199,7 @@ class DS:
                              (len(x_test4), patch_size[0], patch_size[1], patch_size[2], self.channel))
         y_test4 = np.reshape(np.array(y_test4), (len(x_test4), patch_size[0], patch_size[1], patch_size[2], 1))
 
-        return x_train, y_train, x_test, y_test, x_train2, y_train2, x_test2, y_test2, x_train3, y_train3, x_test3, y_test3, x_train4, y_train4, x_test4, y_test4
+        return x_train, y_train, x_test, y_test, x_train3, y_train3, x_test3, y_test3, x_train4, y_train4, x_test4, y_test4
 
     @staticmethod
     def create_files(K, R, g_path):
