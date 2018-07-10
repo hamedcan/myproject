@@ -70,10 +70,11 @@ class DS:
                 new_image = scipy.ndimage.interpolation.zoom(images[i], j)
                 new_map = np.around(scipy.ndimage.interpolation.zoom(label_maps[i], j))
                 if np.count_nonzero(new_map) > 50:
-                    rejected += 1
                     images.append(new_image)
                     label_maps.append(new_map)
                     centers.append([round(centers[i][0] * j), round(centers[i][1] * j), round(centers[i][2] * j)])
+                else:
+                    rejected += 1
         return (count * (len(scale) + 1)) - rejected
 
     def augment_rotation(self, count, images, label_maps, centers):
