@@ -290,7 +290,7 @@ class DS:
             fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
             fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-            dice = (2 * tp)+0.000001 / (0.000001+ (fp + fn) + 2 * tp)
+            dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
             logger.write(
                 hamed + " for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(

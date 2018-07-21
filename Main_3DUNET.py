@@ -8,7 +8,7 @@ from keras import backend as Keras
 # initialization and prepare data set#########################################################
 patch_size = [40, 40, 16]
 batch_size = 32
-epochs = 1
+epochs = 100
 repeat = 1
 channel = 2
 K = 5
