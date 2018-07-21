@@ -109,7 +109,7 @@ class DS:
         train_count = len(self.train_indexes[fold])
         test_count = len(self.test_indexes[fold])
 
-        scales = [0.75, 0.5]
+        scales = [0.9, 0.8, 0.75, 0.7, 0.6, 0.5,0.4,0.3,0.2]
 
         x_train = []
         y_train = []
@@ -135,8 +135,8 @@ class DS:
         # ======================================================================================================
         for i in range(0, train_count):
             self.add(train_image[i], train_label_map[i], train_center[i], x_train, y_train)
-            x_train = np.reshape(np.array(x_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
-            y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
+        x_train = np.reshape(np.array(x_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], self.channel))
+        y_train = np.reshape(np.array(y_train), (len(x_train), patch_size[0], patch_size[1], patch_size[2], 1))
         # ===============t================e====================s=================t================================
         t_x = []
         t_y = []
@@ -290,7 +290,7 @@ class DS:
             fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
             fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-            dice = (2 * tp) / ((fp + fn) + 2 * tp)
+            dice = (2 * tp)+0.000001 / (0.000001+ (fp + fn) + 2 * tp)
 
             logger.write(
                 hamed + " for instance " + str(self.test_indexes[fold][i]) + "," + str(tp) + "," + str(tn) + "," + str(
