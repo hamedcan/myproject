@@ -109,7 +109,7 @@ class DS:
         train_count = len(self.train_indexes[fold])
         test_count = len(self.test_indexes[fold])
 
-        scales = [0.9, 0.8, 0.75, 0.7, 0.6, 0.5,0.4,0.3,0.2]
+        scales = [0.75, 0.5]
 
         x_train = []
         y_train = []
