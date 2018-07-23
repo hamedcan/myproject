@@ -11,7 +11,7 @@ for rcount in range(0,2):
     batch_size = 32
     epochs = 200
     repeat = 2
-    channel = 2
+    channel = 1
     K = 5
     angles = []
     scales = [0.9, 0.8, 0.7, 0.6, 0.5,0.4]
