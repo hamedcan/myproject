@@ -6,14 +6,14 @@ from matplotlib import pyplot as plt
 from DS import DS
 from keras import backend as Keras
 # initialization and prepare data set#########################################################
-patch_size = [40, 40, 16]
+patch_size = [32, 32, 16]
 batch_size = 32
-epochs = 100
+epochs = 200
 repeat = 1
 channel = 2
 K = 5
 angles = []
-scales = [0.9, 0.8, 0.7, 0.6, 0.5]
+scales = [0.9, 0.8, 0.7, 0.6, 0.5,0.4]
 g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
 ds = DS('.\data\\', patch_size, channel, K, angles, scales)
