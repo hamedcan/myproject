@@ -60,7 +60,7 @@ for rcount in range(0,2):
 
                         image = np.zeros([patch_size[0], patch_size[1], 3])
                         image[:, :, 0] = x_test[k][i, :, :, j, 0]
-                        image[:, :, 1] = x_test[k][i, :, :, j, 0] + (x_test[k][i, :, :, j, 0]/4)  # green for ground truth
+                        image[:, :, 1] = x_test[k][i, :, :, j, 0] + (y_test[k][i, :, :, j, 0]/4)  # green for ground truth
                         image[:, :, 2] = x_test[k][i, :, :, j, 0]
                         plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-gt.png', image)
 
