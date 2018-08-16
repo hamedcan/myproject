@@ -9,12 +9,13 @@ from keras import backend as Keras
 for rcount in range(0,2):
     patch_size = [32, 32, 16]
     batch_size = 32
-    epochs = 200
-    repeat = 2
+    epochs = 2#00
+    repeat = 1
     channel = 1
     K = 5
     angles = []
-    scales = [0.9, 0.8, 0.7, 0.6, 0.5,0.4]
+    # scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
+    scales = [0.8, 0.6, 0.4]
     g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
     ds = DS('.\data\\', patch_size, channel, K, angles, scales)
@@ -44,30 +45,30 @@ for rcount in range(0,2):
             # train model##################################################################################
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, shuffle=True,
                     validation_data=(x_test[0], y_test[0]), verbose=2)
-            # get accuracy on test data####################################################################
-            for k in range(0, len(x_test)):
-                predicted_label_maps = model.predict(x_test[k])
-                ds.post_process2(fold, logger, y_test[k], predicted_label_maps, str(k)+'X')
-                logger.flush()
-                for i in range(0, x_test[k].shape[0]):
-                    for j in range(0, patch_size[2]):
+            # start test##################################################################################
+            ds.post_process2(fold, logger, x_test, y_test, model)
+            # end test##################################################################################
+            logger.flush()
+            logger.close()
+            # for i in range(0, x_test[k].shape[0]):
+            #     for j in range(0, patch_size[2]):
+            #
+            #         image = np.zeros([patch_size[0], patch_size[1], 3])
+            #         image[:, :, 0] = x_test[k][i, :, :, j, 0] + (predicted_label_maps[i, :, :, j, 0]/4)  # red for predicted by model
+            #         image[:, :, 1] = x_test[k][i, :, :, j, 0]
+            #         image[:, :, 2] = x_test[k][i, :, :, j, 0]
+            #         plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-pred.png', image)
+            #
+            #         image = np.zeros([patch_size[0], patch_size[1], 3])
+            #         image[:, :, 0] = x_test[k][i, :, :, j, 0]
+            #         image[:, :, 1] = x_test[k][i, :, :, j, 0] + (y_test[k][i, :, :, j, 0]/4)  # green for ground truth
+            #         image[:, :, 2] = x_test[k][i, :, :, j, 0]
+            #         plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-gt.png', image)
+            #
+            #         image = np.zeros([patch_size[0], patch_size[1], 3])
+            #         image[:, :, 0] = x_test[k][i, :, :, j, 0]
+            #         image[:, :, 1] = x_test[k][i, :, :, j, 0]
+            #         image[:, :, 2] = x_test[k][i, :, :, j, 0]
+            #         plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-orig.png', image)
 
-                        image = np.zeros([patch_size[0], patch_size[1], 3])
-                        image[:, :, 0] = x_test[k][i, :, :, j, 0] + (predicted_label_maps[i, :, :, j, 0]/4)  # red for predicted by model
-                        image[:, :, 1] = x_test[k][i, :, :, j, 0]
-                        image[:, :, 2] = x_test[k][i, :, :, j, 0]
-                        plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-pred.png', image)
 
-                        image = np.zeros([patch_size[0], patch_size[1], 3])
-                        image[:, :, 0] = x_test[k][i, :, :, j, 0]
-                        image[:, :, 1] = x_test[k][i, :, :, j, 0] + (y_test[k][i, :, :, j, 0]/4)  # green for ground truth
-                        image[:, :, 2] = x_test[k][i, :, :, j, 0]
-                        plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-gt.png', image)
-
-                        image = np.zeros([patch_size[0], patch_size[1], 3])
-                        image[:, :, 0] = x_test[k][i, :, :, j, 0]
-                        image[:, :, 1] = x_test[k][i, :, :, j, 0]
-                        image[:, :, 2] = x_test[k][i, :, :, j, 0]
-                        plt.imsave(path + r'\test' + '\im-' + str(k) + '-' + str(i) + '-' + str(j) + '-orig.png', image)
-
-    logger.close()
