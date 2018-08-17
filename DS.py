@@ -8,6 +8,13 @@ from sklearn.model_selection import KFold
 from xlrd import open_workbook
 
 
+def round(value, th):
+    if value > th:
+        return 1
+    else:
+        return 0
+
+
 class DS:
     def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
         print('DS - initialization')
@@ -17,7 +24,7 @@ class DS:
         self.angles = angles
         self.scales = scales
         self.channel = channel
-        self.scales = [0.8, 0.6, 0.4]
+        self.scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -221,87 +228,43 @@ class DS:
         x.append(image_final)
         y.append(label_map_final)
 
-    @staticmethod
-    def post_process(logger, gt1, pred1, gt2, pred2):
-        m = 1  # margin
-        t = 100  # threshold
-        t_tp = 0
-        t_f = 0
-        t_tp2 = 0
-        t_f2 = 0
-        dice = []
-
-        c = gt1.shape[0]
-        x = gt1.shape[1]
-        y = gt1.shape[2]
-        z = gt1.shape[3]
-        logger.write('==================================================================\n')
-        for i in range(0, c):
-            margin_pred = np.around(pred1[i, :, :, :, 0])
-            margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
-
-            margin_gt = np.around(gt1[i, :, :, :, 0])
-            margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
-
-            logger.write('sample' + str(i) + ': ' + str(np.count_nonzero(margin_pred)) + '--' + str(
-                np.count_nonzero(margin_gt)) + '\n')
-
-            if np.count_nonzero(margin_pred) >= t or np.count_nonzero(margin_gt) >= t:  # TRUE
-                f = np.count_nonzero(np.add(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(gt2[i, :, :, :, 0], np.around(pred2[i, :, :, :, 0])))  # AND
-                t_f += f * 8
-                t_tp += tp * 8
-
-                t_f2 += f
-                t_tp2 += tp
-                dice.append((2 * tp) / (f + 2 * tp))
-
-            else:  # FALSE
-                f = np.count_nonzero(np.add(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])) == 1)  # XOR
-                tp = np.count_nonzero(np.multiply(gt1[i, :, :, :, 0], np.around(pred1[i, :, :, :, 0])))  # AND
-                t_f += f
-                t_tp += tp
-
-                t_f2 += f
-                t_tp2 += tp
-                dice.append((2 * tp) / (f + 2 * tp))
-
-        return np.average(dice), (2 * t_tp) / (t_f + 2 * t_tp), (2 * t_tp2) / (t_f2 + 2 * t_tp2)
-
     def post_process2(self, fold, logger, x_test, y_test, model):
         m = 1  # margin
         c = y_test[0].shape[0]
 
-        for i in range(0, c):
-            scale_index = 0
-            while len(self.scales) > scale_index:
-                pred = model.predict(x_test[scale_index])
-                gt = y_test[scale_index]
-                x = gt.shape[1]
-                y = gt.shape[2]
-                z = gt.shape[3]
+        for t in (0.3, 0.4, 0.5, 0.6, 0.7):
+            for i in range(0, c):
+                scale_index = 0
+                while True:
+                    pred = model.predict(x_test[scale_index])
+                    gt = y_test[scale_index]
+                    x = gt.shape[1]
+                    y = gt.shape[2]
+                    z = gt.shape[3]
 
-                temp_pred = np.around(pred[i, :, :, :, 0])
-                margin_pred = np.around(pred[i, :, :, :, 0])
-                margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+                    temp_pred = round()
+                    margin_pred = round(pred[i, :, :, :, 0])
+                    margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-                temp_gt = gt[i, :, :, :, 0]
-                margin_gt = np.around(gt[i, :, :, :, 0])
-                margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+                    temp_gt = gt[i, :, :, :, 0]
+                    margin_gt = round(gt[i, :, :, :, 0])
+                    margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-                tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
-                tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
-                fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
-                fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
+                    tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
+                    tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
+                    fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
+                    fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-                dice = (2 * tp) / ((fp + fn) + 2 * tp)
+                    dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
-                if np.count_nonzero(margin_pred) == 0:
-                    logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(tp) + "," + str(
-                        tn) + "," + str(fp) + "," + str(fn) + "," + str(dice) + "\n")
-                    break
-                else:
-                    scale_index += 1
+                    if np.count_nonzero(margin_pred) == 0 or len(self.scales) == scale_index + 1:
+                        logger.write(
+                            "th:" + t + "," + str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
+                                tp) + "," + str(
+                                tn) + "," + str(fp) + "," + str(fn) + "," + str(dice) + "\n")
+                        break
+                    else:
+                        scale_index += 1
 
     def complexity(self, counter):
         a = 0
