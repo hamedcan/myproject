@@ -8,11 +8,7 @@ from sklearn.model_selection import KFold
 from xlrd import open_workbook
 
 
-def round(value, th):
-    if value > th:
-        return 1
-    else:
-        return 0
+
 
 
 class DS:
@@ -242,12 +238,12 @@ class DS:
                     y = gt.shape[2]
                     z = gt.shape[3]
 
-                    temp_pred = round()
-                    margin_pred = round(pred[i, :, :, :, 0])
+                    temp_pred = DS.round(pred[i, :, :, :, 0])
+                    margin_pred = DS.round(pred[i, :, :, :, 0])
                     margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                     temp_gt = gt[i, :, :, :, 0]
-                    margin_gt = round(gt[i, :, :, :, 0])
+                    margin_gt = DS.round(gt[i, :, :, :, 0])
                     margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                     tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
@@ -287,3 +283,10 @@ class DS:
             complexity = str(self.complexity(i))
             file.write(str(i) + ", " + complexity)
             print("complexity for: " + str(i) + ", " + complexity)
+
+    @staticmethod
+    def round(value, th):
+        if value > th:
+            return 1
+        else:
+            return 0
