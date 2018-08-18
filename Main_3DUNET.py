@@ -7,16 +7,15 @@ from DS import DS
 from keras import backend as Keras
 
 # initialization and prepare data set#########################################################
-for rcount in range(0, 1):
-    patch_size = [32, 32, 16]
+for rcount in range(0, 3):
+    patch_size = [40, 40, 16]
     batch_size = 32
-    epochs = 2
+    epochs = 200
     repeat = 1
     channel = 1
     K = 2
     angles = []
     scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
-    # scales = [0.8, 0.6, 0.4]
     g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
     ds = DS('.\data\\', patch_size, channel, K, angles, scales)
@@ -50,4 +49,4 @@ for rcount in range(0, 1):
             ds.post_process2(fold, logger, x_test, y_test, model)
             # end test##################################################################################
             logger.flush()
-            logger.close()
+logger.close()

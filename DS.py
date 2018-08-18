@@ -238,12 +238,12 @@ class DS:
                     y = gt.shape[2]
                     z = gt.shape[3]
 
-                    temp_pred = DS.round(pred[i, :, :, :, 0])
-                    margin_pred = DS.round(pred[i, :, :, :, 0])
+                    temp_pred = DS.round(pred[i, :, :, :, 0],t)
+                    margin_pred = DS.round(pred[i, :, :, :, 0],t)
                     margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                     temp_gt = gt[i, :, :, :, 0]
-                    margin_gt = DS.round(gt[i, :, :, :, 0])
+                    margin_gt = np.around(gt[i, :, :, :, 0])
                     margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                     tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
@@ -255,7 +255,7 @@ class DS:
 
                     if np.count_nonzero(margin_pred) == 0 or len(self.scales) == scale_index + 1:
                         logger.write(
-                            "th:" + t + "," + str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
+                            "th:" + str(t) + "," + str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
                                 tp) + "," + str(
                                 tn) + "," + str(fp) + "," + str(fn) + "," + str(dice) + "\n")
                         break
@@ -286,7 +286,12 @@ class DS:
 
     @staticmethod
     def round(value, th):
-        if value > th:
-            return 1
-        else:
-            return 0
+        result = np.zeros_like(value)
+        for i in range(0,value.shape[0]):
+            for j in range(0,value.shape[1]):
+                for k in range (0,value.shape[2]):
+                    if value[i, j, k] > th:
+                        result[i, j, k] = 1
+                    else:
+                        result[i, j, k] = 0
+        return result
