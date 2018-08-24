@@ -8,19 +8,19 @@ from keras import backend as Keras
 
 # initialization and prepare data set#########################################################
 for rcount in range(0, 3):
-    patch_size = [40, 40, 16]
+    patch_size = [80, 80]
     batch_size = 32
     epochs = 200
     repeat = 1
     channel = 1
-    K = 2
+    K = 5
     angles = []
-    scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
+    scales = []
     g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
     ds = DS('.\data\\', patch_size, channel, K, angles, scales)
     logger = ds.create_files(K, repeat, g_path)
-    model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+    model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], channel))
     logger.write('batch size: ' + str(batch_size) + '\n')
     logger.write('epochs: ' + str(epochs) + '\n')
     logger.write('repeat: ' + str(repeat) + '\n')
@@ -38,7 +38,7 @@ for rcount in range(0, 3):
         for repeat_count in range(0, repeat):
             del model
             Keras.clear_session()
-            model = Model.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
+            model = Model.get_model(logger, 1, input_shape=(patch_size[0], patch_size[1], channel))
             logger.write('repeat: ' + str(repeat_count) + '\n')
             print('repeat: ' + str(repeat_count) + '\n')
             path = g_path + r'\fold-' + str(fold) + r'-rep-' + str(repeat_count)
