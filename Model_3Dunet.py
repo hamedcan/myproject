@@ -75,8 +75,8 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2), filter_size=(3
 
     adam = optimizers.Adam()
 
-    # model.compile(optimizer=adam, loss='cross', metrics=[dice_coef])
-    model.compile(optimizer=adam, loss=losses.binary_crossentropy, metrics=[dice_coef])
+    model.compile(optimizer=adam, loss='cross', metrics=[dice_coef])
+    # model.compile(optimizer=adam, loss=losses.binary_crossentropy, metrics=[dice_coef])
     return model
 
 
