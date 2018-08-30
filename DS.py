@@ -137,7 +137,7 @@ class DS:
         for i in range(0, train_count):
             self.add(train_image[i], train_label_map[i], train_center[i], tmp_x, tmp_y)
         for i in range(len(tmp_x)):
-            for j in range(train_center[i][2]-20,train_center[i][2]+20):
+            for j in range(max(0,train_center[i][2]-19),min(tmp_y[i].shape[2],train_center[i][2]+19)):
                 x_train_2D.append(tmp_x[i][:, :, j, :])
                 if np.count_nonzero(tmp_y[i][:, :, j]) > 5:
                     y_train_2D.append(1)
@@ -159,7 +159,7 @@ class DS:
             self.add(self.images[i], self.label_maps[i], self.centers[i], t_x, t_y)
         for i in range(0, len(t_x)):
             hamed = 0
-            for j in range(self.centers[self.test_indexes[i]]-20,self.centers[self.test_indexes[i]]+20):
+            for j in range(max(0,self.centers[self.test_indexes[fold][i]][2]-19),min(t_y[i].shape[2],self.centers[self.test_indexes[fold][i]][2]+19)):
                 x_test_2D.append(t_x[i][:, :, j, :])
                 if np.count_nonzero(t_y[i][:, :, j]) > 5:
                     y_test_2D.append(1)
