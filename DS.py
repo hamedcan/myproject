@@ -110,8 +110,6 @@ class DS:
         print('DS - start getting data')
         train_count = len(self.train_indexes[fold])
 
-        x_train = []
-        y_train = []
         x_test = []
         y_test = []
 
@@ -138,15 +136,17 @@ class DS:
 
         for i in range(0, train_count):
             self.add(train_image[i], train_label_map[i], train_center[i], tmp_x, tmp_y)
-        for i in range(0, len(tmp_x)):
-            for j in range(tmp_x[i].shape[2]):
-                if np.count_nonzero(tmp_y[i][:, :, j]) > 0:
-                    x_train_2D.append(tmp_x[i][:, :, j, :])
-                    y_train_2D.append(tmp_y[i][:, :, j])
+        for i in range(len(tmp_x)):
+            for j in range(train_center[i][2]-20,train_center[i][2]+20):
+                x_train_2D.append(tmp_x[i][:, :, j, :])
+                if np.count_nonzero(tmp_y[i][:, :, j]) > 5:
+                    y_train_2D.append(1)
+                else:
+                    y_train_2D.append(0)
 
         x_train = np.reshape(np.array(x_train_2D),
                              (len(x_train_2D), patch_size[0], patch_size[1], self.channel))
-        y_train = np.reshape(np.array(y_train_2D), (len(y_train_2D), patch_size[0], patch_size[1], 1))
+        y_train = np.reshape(np.array(y_train_2D), (len(y_train_2D), 1))
         # ===============t================e====================s=================t================================
         t_x = []
         t_y = []
@@ -159,16 +159,18 @@ class DS:
             self.add(self.images[i], self.label_maps[i], self.centers[i], t_x, t_y)
         for i in range(0, len(t_x)):
             hamed = 0
-            for j in range(t_x[i].shape[2]):
-                if (np.count_nonzero(t_y[i][:, :, j]) > 0):
-                    x_test_2D.append(t_x[i][:, :, j, :])
-                    y_test_2D.append(t_y[i][:, :, j])
-                    hamed += 1
+            for j in range(self.centers[self.test_indexes[i]]-20,self.centers[self.test_indexes[i]]+20):
+                x_test_2D.append(t_x[i][:, :, j, :])
+                if np.count_nonzero(t_y[i][:, :, j]) > 5:
+                    y_test_2D.append(1)
+                else:
+                    y_test_2D.append(0)
+                hamed += 1
             self.slice_counter.append(hamed)
             print(str(hamed))
 
         x_test_2D = np.reshape(np.array(x_test_2D), (len(x_test_2D), patch_size[0], patch_size[1], self.channel))
-        y_test_2D = np.reshape(np.array(y_test_2D), (len(y_test_2D), patch_size[0], patch_size[1], 1))
+        y_test_2D = np.reshape(np.array(y_test_2D), (len(y_test_2D), 1))
 
         x_test.append(x_test_2D)
         y_test.append(y_test_2D)
@@ -242,7 +244,7 @@ class DS:
         acc_fp = 0
         acc_fn = 0
 
-        sample_index =0
+        sample_index = 0
         slice_index = 0
         for i in range(0, c):
             print(str(i), '--', str(slice_index), ' of ', str(self.slice_counter[sample_index]))
@@ -263,10 +265,4 @@ class DS:
                 sample_index += 1
                 slice_index = -1
 
-
-
-
             slice_index += 1
-
-
-
