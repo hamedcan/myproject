@@ -139,11 +139,11 @@ class DS:
         for i in range(0, train_count):
             self.add(train_image[i], train_label_map[i], train_center[i], tmp_x, tmp_y)
         for i in range(0, len(tmp_x)):
-            for j in range(tmp_x[i].shape[2]):
+            # for j in range(tmp_x[i].shape[2]):
                 # if np.count_nonzero(tmp_y[i][:, :, j]) > 0:
-                for j in range(max(0, train_center[i][2] - 19), min(tmp_y[i].shape[2], train_center[i][2] + 19)):
-                    x_train_2D.append(tmp_x[i][:, :, j, :])
-                    y_train_2D.append(tmp_y[i][:, :, j])
+            for j in range(max(0, train_center[i][2] - 19), min(tmp_y[i].shape[2], train_center[i][2] + 19)):
+                x_train_2D.append(tmp_x[i][:, :, j, :])
+                y_train_2D.append(tmp_y[i][:, :, j])
 
         x_train = np.reshape(np.array(x_train_2D),
                              (len(x_train_2D), patch_size[0], patch_size[1], self.channel))
@@ -160,13 +160,13 @@ class DS:
             self.add(self.images[i], self.label_maps[i], self.centers[i], t_x, t_y)
         for i in range(0, len(t_x)):
             hamed = 0
-            for j in range(t_x[i].shape[2]):
+            # for j in range(t_x[i].shape[2]):
                 # if (np.count_nonzero(t_y[i][:, :, j]) > 0):
-                for j in range(max(0, self.centers[self.test_indexes[fold][i]][2] - 19),
-                               min(t_y[i].shape[2], self.centers[self.test_indexes[fold][i]][2] + 19)):
-                    x_test_2D.append(t_x[i][:, :, j, :])
-                    y_test_2D.append(t_y[i][:, :, j])
-                    hamed += 1
+            for j in range(max(0, self.centers[self.test_indexes[fold][i]][2] - 19),
+                            min(t_y[i].shape[2], self.centers[self.test_indexes[fold][i]][2] + 19)):
+                x_test_2D.append(t_x[i][:, :, j, :])
+                y_test_2D.append(t_y[i][:, :, j])
+                hamed += 1
             self.slice_counter.append(hamed)
             print(str(hamed))
 
