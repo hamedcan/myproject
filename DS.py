@@ -8,9 +8,6 @@ from sklearn.model_selection import KFold
 from xlrd import open_workbook
 
 
-
-
-
 class DS:
     def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
         print('DS - initialization')
@@ -34,7 +31,7 @@ class DS:
         self.load()
         self.generate_k_fold_indexes()
 
-        # self.calculate_complexity()
+        # self.calculate_pred_complexity()
 
     def load(self):
         print('DS - loading')
@@ -228,7 +225,7 @@ class DS:
         m = 1  # margin
         c = y_test[0].shape[0]
 
-        for t in (0.3, 0.4, 0.5, 0.6, 0.7):
+        for t in (0.5):
             for i in range(0, c):
                 scale_index = 0
                 while True:
@@ -238,8 +235,8 @@ class DS:
                     y = gt.shape[2]
                     z = gt.shape[3]
 
-                    temp_pred = DS.round(pred[i, :, :, :, 0],t)
-                    margin_pred = DS.round(pred[i, :, :, :, 0],t)
+                    temp_pred = DS.round(pred[i, :, :, :, 0], t)
+                    margin_pred = DS.round(pred[i, :, :, :, 0], t)
                     margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                     temp_gt = gt[i, :, :, :, 0]
@@ -251,20 +248,24 @@ class DS:
                     fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
                     fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
+                    pred_size = np.count_nonzero(temp_pred)
+                    gt_size = np.count_nonzero(temp_gt)
+
+                    comp = self.complexity(temp_gt)
+
                     dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
                     if np.count_nonzero(margin_pred) == 0 or len(self.scales) == scale_index + 1:
-                        logger.write(
-                            "th:" + str(t) + "," + str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
-                                tp) + "," + str(
-                                tn) + "," + str(fp) + "," + str(fn) + "," + str(dice) + "\n")
+                        logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
+                            tp) + "," + str(fp) + "," + str(fn) + "," + str(
+                            dice) + "," + str(pred_size) + "," + str(gt_size) + "," + str(comp) + "\n")
                         break
                     else:
                         scale_index += 1
 
-    def complexity(self, counter):
+    def complexity(self, gt):
         a = 0
-        gt = self.label_maps[counter]
+        # gt = self.label_maps[counter]
         for i in range(1, gt.shape[0] - 1):
             for j in range(1, gt.shape[1] - 1):
                 for k in range(1, gt.shape[2] - 1):
@@ -276,20 +277,20 @@ class DS:
 
         return float(a ** 3) / float(v ** 2)
 
-    def calculate_complexity(self):
-        print("DS - Calculating complexity")
+    def calculate_gt_complexity(self):
+        print("DS - Calculating gt complexity")
         file = open('\comp.txt', "w+")
         for i in range(0, self.count):
-            complexity = str(self.complexity(i))
+            complexity = str(self.complexity(self.label_maps[i]))
             file.write(str(i) + ", " + complexity)
             print("complexity for: " + str(i) + ", " + complexity)
 
     @staticmethod
     def round(value, th):
         result = np.zeros_like(value)
-        for i in range(0,value.shape[0]):
-            for j in range(0,value.shape[1]):
-                for k in range (0,value.shape[2]):
+        for i in range(0, value.shape[0]):
+            for j in range(0, value.shape[1]):
+                for k in range(0, value.shape[2]):
                     if value[i, j, k] > th:
                         result[i, j, k] = 1
                     else:

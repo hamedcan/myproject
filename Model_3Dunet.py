@@ -1,7 +1,7 @@
 import numpy as np
 from keras import backend as K
 from keras.engine import Input, Model
-from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Deconv3D, BatchNormalization, Lambda
+from keras.layers import Conv3D, MaxPooling3D, UpSampling3D, Activation, Cropping3D, BatchNormalization, Lambda
 from keras import optimizers
 from keras.layers.merge import concatenate
 import tensorflow as tf
@@ -78,58 +78,65 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_1 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_1)
     conv7_1 = BatchNormalization()(conv7_1)
 
-    #conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(1)(inputs))
-    #conv1_2 = BatchNormalization()(conv1_2)
-    #conv1_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_2)
-    #conv1_2 = BatchNormalization()(conv1_2)
-    #pool1_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv1_2)
+    conv1_2 = Conv3D(16, filter_size, padding='same', activation='relu')(crop(1)(inputs))
+    conv1_2 = BatchNormalization()(conv1_2)
+    conv1_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv1_2)
+    conv1_2 = BatchNormalization()(conv1_2)
+    pool1_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv1_2)
 
-    #conv2_2 = Conv3D(32, filter_size, padding='same', activation='relu')(pool1_2)
-    #conv2_2 = BatchNormalization()(conv2_2)
-    #conv2_2 = Conv3D(64, filter_size, padding='same', activation='relu')(conv2_2)
-    #conv2_2 = BatchNormalization()(conv2_2)
-    #pool2_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv2_2)
+    conv2_2 = Conv3D(32, filter_size, padding='same', activation='relu')(pool1_2)
+    conv2_2 = BatchNormalization()(conv2_2)
+    conv2_2 = Conv3D(64, filter_size, padding='same', activation='relu')(conv2_2)
+    conv2_2 = BatchNormalization()(conv2_2)
+    pool2_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv2_2)
 
-    #conv3_2 = Conv3D(64, filter_size, padding='same', activation='relu')(pool2_2)
-    #conv3_2 = BatchNormalization()(conv3_2)
-    #conv3_2 = Conv3D(128, filter_size, padding='same', activation='relu')(conv3_2)
-    #conv3_2 = BatchNormalization()(conv3_2)
-    #pool3_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv3_2)
+    conv3_2 = Conv3D(64, filter_size, padding='same', activation='relu')(pool2_2)
+    conv3_2 = BatchNormalization()(conv3_2)
+    conv3_2 = Conv3D(128, filter_size, padding='same', activation='relu')(conv3_2)
+    conv3_2 = BatchNormalization()(conv3_2)
+    pool3_2 = MaxPooling3D(pool_size=pool_size, strides=2)(conv3_2)
 
-    #conv4_2 = Conv3D(128, filter_size, padding='same', activation='relu')(pool3_2)
-    #conv4_2 = BatchNormalization()(conv4_2)
-    #conv4_2 = Conv3D(256, filter_size, padding='same', activation='relu')(conv4_2)
-    #conv4_2 = BatchNormalization()(conv4_2)
+    conv4_2 = Conv3D(128, filter_size, padding='same', activation='relu')(pool3_2)
+    conv4_2 = BatchNormalization()(conv4_2)
+    conv4_2 = Conv3D(256, filter_size, padding='same', activation='relu')(conv4_2)
+    conv4_2 = BatchNormalization()(conv4_2)
 
-    #up5_2 = UpSampling3D(size=pool_size)(conv4_2)
-    #up5_2 = Conv3D(256, (2, 2, 2), padding='same', activation='relu')(up5_2)
-    #up5_2 = BatchNormalization()(up5_2)
-    #up5_2 = concatenate([up5_2, conv3_2], axis=4)
-    #conv5_2 = Conv3D(128, filter_size, padding='same', activation='relu')(up5_2)
-    #conv5_2 = BatchNormalization()(conv5_2)
-    #conv5_2 = Conv3D(128, filter_size, padding='same', activation='relu')(conv5_2)
-    #conv5_2 = BatchNormalization()(conv5_2)
+    up5_2 = UpSampling3D(size=pool_size)(conv4_2)
+    up5_2 = Conv3D(256, (2, 2, 2), padding='same', activation='relu')(up5_2)
+    up5_2 = BatchNormalization()(up5_2)
+    up5_2 = concatenate([up5_2, conv3_2], axis=4)
+    conv5_2 = Conv3D(128, filter_size, padding='same', activation='relu')(up5_2)
+    conv5_2 = BatchNormalization()(conv5_2)
+    conv5_2 = Conv3D(128, filter_size, padding='same', activation='relu')(conv5_2)
+    conv5_2 = BatchNormalization()(conv5_2)
 
-    #up6_2 = UpSampling3D(size=pool_size)(conv5_2)
-    #up6_2 = Conv3D(128, (2, 2, 2), padding='same', activation='relu')(up6_2)
-    #up6_2 = BatchNormalization()(up6_2)
-    #up6_2 = concatenate([up6_2, conv2_2], axis=4)
-    #conv6_2 = Conv3D(64, filter_size, padding='same', activation='relu')(up6_2)
-    #conv6_2 = BatchNormalization()(conv6_2)
-    #conv6_2 = Conv3D(64, filter_size, padding='same', activation='relu')(conv6_2)
-    #conv6_2 = BatchNormalization()(conv6_2)
+    up6_2 = UpSampling3D(size=pool_size)(conv5_2)
+    up6_2 = Conv3D(128, (2, 2, 2), padding='same', activation='relu')(up6_2)
+    up6_2 = BatchNormalization()(up6_2)
+    up6_2 = concatenate([up6_2, conv2_2], axis=4)
+    conv6_2 = Conv3D(64, filter_size, padding='same', activation='relu')(up6_2)
+    conv6_2 = BatchNormalization()(conv6_2)
+    conv6_2 = Conv3D(64, filter_size, padding='same', activation='relu')(conv6_2)
+    conv6_2 = BatchNormalization()(conv6_2)
 
-    #up7_2 = UpSampling3D(size=pool_size)(conv6_2)
-    #up7_2 = Conv3D(64, (2, 2, 2), padding='same', activation='relu')(up7_2)
-    #up7_2 = BatchNormalization()(up7_2)
-    #up7_2 = concatenate([up7_2, conv1_2], axis=4)
-    #conv7_2 = Conv3D(32, filter_size, padding='same', activation='relu')(up7_2)
-    #conv7_2 = BatchNormalization()(conv7_2)
-    #conv7_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_2)
-    #conv7_2 = BatchNormalization()(conv7_2)
+    up7_2 = UpSampling3D(size=pool_size)(conv6_2)
+    up7_2 = Conv3D(64, (2, 2, 2), padding='same', activation='relu')(up7_2)
+    up7_2 = BatchNormalization()(up7_2)
+    up7_2 = concatenate([up7_2, conv1_2], axis=4)
+    conv7_2 = Conv3D(32, filter_size, padding='same', activation='relu')(up7_2)
+    conv7_2 = BatchNormalization()(conv7_2)
+    conv7_2 = Conv3D(32, filter_size, padding='same', activation='relu')(conv7_2)
+    conv7_2 = BatchNormalization()(conv7_2)
 
-    #conv8 = concatenate([conv7_1, conv7_2], axis=4)
-    conv8 = Conv3D(n_labels, (1, 1, 1))(conv7_1)
+
+    x = input_shape[0]
+    y = input_shape[1]
+    z = input_shape[2]
+    conv7_2 = Cropping3D(cropping=(((x / 4)+1, 0.75 * x), ((y / 4)+1, 0.75 * y), ((z / 4)+1, 0.75 * z)))(conv7_2)
+    conv7_2 = UpSampling3D(size=pool_size)(conv7_2)
+
+    conv8 = concatenate([conv7_1, conv7_2], axis=4)
+    conv8 = Conv3D(n_labels, (1, 1, 1))(conv8)
     act = Activation('sigmoid')(conv8)
     model = Model(inputs=inputs, outputs=act)
 
