@@ -7,18 +7,23 @@ from DS import DS
 from keras import backend as Keras
 
 # initialization and prepare data set#########################################################
-for rcount in range(0, 3):
-    patch_size = [40, 40, 16]
-    batch_size = 32
+for rcount in range(0, 5):
+    patch_size = [32, 32, 16]
+    batch_size = 16
     epochs = 200
     repeat = 1
-    channel = 1
-    K = 2
+    channel = 2
+    K = 5
     angles = []
-    scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
+    aug_scales = [0.5]
+    pp_scales = [0.8, 0.6, 0.4]
+
+
+
+
     g_path = r'C:\result\\' + datetime.now().strftime('%Y-%m-%d--%H-%M')
 
-    ds = DS('.\data\\', patch_size, channel, K, angles, scales)
+    ds = DS('.\data\\', patch_size, channel, K, angles, aug_scales, pp_scales)
     logger = ds.create_files(K, repeat, g_path)
     model = Model.get_model(logger, 0, input_shape=(patch_size[0], patch_size[1], patch_size[2], channel))
     logger.write('batch size: ' + str(batch_size) + '\n')
@@ -26,7 +31,8 @@ for rcount in range(0, 3):
     logger.write('repeat: ' + str(repeat) + '\n')
     logger.write('fold: ' + str(K) + '\n')
     logger.write('angles: ' + str(angles) + '\n')
-    logger.write('scales: ' + str(scales) + '\n')
+    logger.write('aug_scales: ' + str(aug_scales) + '\n')
+    logger.write('pp_scales: ' + str(pp_scales) + '\n')
     logger.write('channel: ' + str(channel) + '\n')
     logger.flush()
     ####################################################################################################

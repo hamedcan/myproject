@@ -9,15 +9,15 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, channel, K=5, angles=[], scales=[]):
+    def __init__(self, path, patch_size, channel, K=5, angles=[], aug_scales=[], pp_scales=[]):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
         self.K = K
         self.angles = angles
-        self.scales = scales
+        self.aug_scales = aug_scales
+        self.pp_scales = pp_scales
         self.channel = channel
-        self.scales = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -126,7 +126,7 @@ class DS:
             train_label_map.append(self.label_maps[i])
             train_center.append([self.centers[i][0], self.centers[i][1], self.centers[i][2]])
         # ================================zoom out=========================================
-        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.scales)
+        train_count = self.augment_zoom(train_count, train_image, train_label_map, train_center, self.aug_scales)
         # ================================rotation=========================================
         train_count = self.augment_rotation(train_count, train_image, train_label_map, train_center)
         # ==================================flip===========================================
@@ -148,7 +148,7 @@ class DS:
         x_test.append(t_x)
         y_test.append(t_y)
 
-        for j in self.scales:
+        for j in self.pp_scales:
             t_x = []
             t_y = []
             for i in self.test_indexes[fold]:
@@ -225,43 +225,42 @@ class DS:
         m = 1  # margin
         c = y_test[0].shape[0]
 
-        for t in (0.5):
-            for i in range(0, c):
-                scale_index = 0
-                while True:
-                    pred = model.predict(x_test[scale_index])
-                    gt = y_test[scale_index]
-                    x = gt.shape[1]
-                    y = gt.shape[2]
-                    z = gt.shape[3]
+        for i in range(0, c):
+            scale_index = 0
+            while True:
+                pred = model.predict(x_test[scale_index])
+                gt = y_test[scale_index]
+                x = gt.shape[1]
+                y = gt.shape[2]
+                z = gt.shape[3]
 
-                    temp_pred = DS.round(pred[i, :, :, :, 0], t)
-                    margin_pred = DS.round(pred[i, :, :, :, 0], t)
-                    margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+                temp_pred = DS.round(pred[i, :, :, :, 0], 0.5)
+                margin_pred = DS.round(pred[i, :, :, :, 0], 0.5)
+                margin_pred[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-                    temp_gt = gt[i, :, :, :, 0]
-                    margin_gt = np.around(gt[i, :, :, :, 0])
-                    margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
+                temp_gt = gt[i, :, :, :, 0]
+                margin_gt = np.around(gt[i, :, :, :, 0])
+                margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
-                    tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
-                    tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
-                    fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
-                    fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
+                tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
+                tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
+                fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
+                fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-                    pred_size = np.count_nonzero(temp_pred)
-                    gt_size = np.count_nonzero(temp_gt)
+                pred_size = np.count_nonzero(temp_pred)
+                gt_size = np.count_nonzero(temp_gt)
 
-                    comp = self.complexity(temp_gt)
+                comp = self.complexity(temp_gt)
 
-                    dice = (2 * tp) / ((fp + fn) + 2 * tp)
+                dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
-                    if np.count_nonzero(margin_pred) == 0 or len(self.scales) == scale_index + 1:
-                        logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
-                            tp) + "," + str(fp) + "," + str(fn) + "," + str(
-                            dice) + "," + str(pred_size) + "," + str(gt_size) + "," + str(comp) + "\n")
-                        break
-                    else:
-                        scale_index += 1
+                if np.count_nonzero(margin_pred) == 0 or len(self.pp_scales) == scale_index + 1:
+                    logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
+                        tp) + "," + str(fp) + "," + str(fn) + "," + str(
+                        dice) + "," + str(pred_size) + "," + str(gt_size) + "," + str(comp) + "\n")
+                    break
+                else:
+                    scale_index += 1
 
     def complexity(self, gt):
         a = 0
