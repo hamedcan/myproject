@@ -9,15 +9,15 @@ from xlrd import open_workbook
 
 
 class DS:
-    def __init__(self, path, patch_size, channel, K=5, angles=[], aug_scales=[]):
+    def __init__(self, path, patch_size, channel, K=5, angles=[], aug_scales=[], pp_scales=[]):
         print('DS - initialization')
         self.path = path
         self.patch_size = patch_size
         self.K = K
         self.angles = angles
         self.aug_scales = aug_scales
+        self.pp_scales = pp_scales
         self.channel = channel
-        self.step_scales = []
 
         self.kf = KFold(n_splits=K, shuffle=True)
         self.train_indexes = []
@@ -140,41 +140,63 @@ class DS:
             self.add(train_image[i], train_label_map[i], train_center[i], tmp_x, tmp_y)
         for i in range(0, len(tmp_x)):
             # for j in range(tmp_x[i].shape[2]):
-                # if np.count_nonzero(tmp_y[i][:, :, j]) > 0:
+            # if np.count_nonzero(tmp_y[i][:, :, j]) > 0:
+
             for j in range(max(0, train_center[i][2] - 19), min(tmp_y[i].shape[2], train_center[i][2] + 19)):
-                x_train_2D.append(tmp_x[i][:, :, j, :])
-                y_train_2D.append(tmp_y[i][:, :, j])
+                if np.count_nonzero(np.array(tmp_y[i][:, :, j])) > 0:
+                    x_train_2D.append(tmp_x[i][:, :, j, :])
+                    y_train_2D.append(tmp_y[i][:, :, j])
 
         x_train = np.reshape(np.array(x_train_2D),
                              (len(x_train_2D), patch_size[0], patch_size[1], self.channel))
         y_train = np.reshape(np.array(y_train_2D), (len(y_train_2D), patch_size[0], patch_size[1], 1))
         # ===============t================e====================s=================t================================
-        t_x = []
-        t_y = []
-
+        prime_t_x = []
+        prime_t_y = []
         x_test_2D = []
-
         y_test_2D = []
 
         for i in self.test_indexes[fold]:
-            self.add(self.images[i], self.label_maps[i], self.centers[i], t_x, t_y)
-        for i in range(0, len(t_x)):
+            self.add(self.images[i], self.label_maps[i], self.centers[i], prime_t_x, prime_t_y)
+        for i in range(0, len(prime_t_x)):
             hamed = 0
-            # for j in range(t_x[i].shape[2]):
-                # if (np.count_nonzero(t_y[i][:, :, j]) > 0):
             for j in range(max(0, self.centers[self.test_indexes[fold][i]][2] - 19),
-                            min(t_y[i].shape[2], self.centers[self.test_indexes[fold][i]][2] + 19)):
-                x_test_2D.append(t_x[i][:, :, j, :])
-                y_test_2D.append(t_y[i][:, :, j])
-                hamed += 1
+                           min(prime_t_y[i].shape[2], self.centers[self.test_indexes[fold][i]][2] + 19)):
+                if np.count_nonzero(prime_t_y[i][:, :, j]) > 0:
+                    x_test_2D.append(prime_t_x[i][:, :, j, :])
+                    y_test_2D.append(prime_t_y[i][:, :, j])
+                    hamed += 1
             self.slice_counter.append(hamed)
             print(str(hamed))
 
         x_test_2D = np.reshape(np.array(x_test_2D), (len(x_test_2D), patch_size[0], patch_size[1], self.channel))
         y_test_2D = np.reshape(np.array(y_test_2D), (len(y_test_2D), patch_size[0], patch_size[1], 1))
-
         x_test.append(x_test_2D)
         y_test.append(y_test_2D)
+
+        for scaleee in self.pp_scales:
+
+            t_x = []
+            t_y = []
+            for i in self.test_indexes[fold]:
+                temp_img = scipy.ndimage.interpolation.zoom(self.images[i], (scaleee,scaleee,1))
+                temp_map = scipy.ndimage.interpolation.zoom(self.label_maps[i], (scaleee,scaleee,1))
+                self.add(temp_img, temp_map, self.centers[i], t_x, t_y)
+
+
+            x_test_2D = []
+            y_test_2D = []
+            for i in range(0, len(t_x)):
+                for j in range(max(0, self.centers[self.test_indexes[fold][i]][2] - 19),
+                               min(t_y[i].shape[2], self.centers[self.test_indexes[fold][i]][2] + 19)):
+                    if np.count_nonzero(prime_t_y[i][:, :, j]) > 0:
+                        x_test_2D.append(t_x[i][:, :, j, :])
+                        y_test_2D.append(t_y[i][:, :, j])
+
+            x_test_2D = np.reshape(np.array(x_test_2D), (len(x_test_2D), patch_size[0], patch_size[1], self.channel))
+            y_test_2D = np.reshape(np.array(y_test_2D), (len(y_test_2D), patch_size[0], patch_size[1], 1))
+            x_test.append(x_test_2D)
+            y_test.append(y_test_2D)
 
         return x_train, y_train, x_test, y_test
 
@@ -237,39 +259,44 @@ class DS:
         y.append(label_map_final)
 
     def post_process2(self, fold, logger, x_test, y_test, model):
-        m = 1  # margin
+        m = 1
         c = y_test[0].shape[0]
-        pred = model.predict(x_test[0])
-        gt = y_test[0]
         acc_tp = 0
         acc_fp = 0
         acc_fn = 0
 
-        sample_index =0
+        sample_index = 0
         slice_index = 0
         for i in range(0, c):
-            print(str(i), '--', str(slice_index), ' of ', str(self.slice_counter[sample_index]))
-            temp_pred = np.around(pred[i, :, :, 0])
-            temp_gt = gt[i, :, :, 0]
+            scale_index = 0
+            while True:
+                pred = model.predict(x_test[scale_index])
+                gt = y_test[scale_index]
 
-            acc_tp += np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
-            acc_fp += np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
-            acc_fn += np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
+                x = gt.shape[1]
+                y = gt.shape[2]
 
-            if self.slice_counter[sample_index]-1 == slice_index:
-                dice = (2 * acc_tp) / ((acc_fp + acc_fn) + 2 * acc_tp)
-                logger.write(str(dice) + "\n")
-                print(str(dice))
-                acc_tp = 0
-                acc_fp = 0
-                acc_fn = 0
-                sample_index += 1
-                slice_index = -1
+                margin_pred = np.around(pred[i, :, :, 0])
+                margin_pred[m:x - m, m:y - m] = np.zeros((x - 2 * m, y - 2 * m))
 
+                temp_pred = np.around(pred[i, :, :, 0])
+                temp_gt = gt[i, :, :, 0]
+                if np.count_nonzero(margin_pred) == 0 or len(self.pp_scales) == scale_index + 1:
+                    acc_tp += np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
+                    acc_fp += np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
+                    acc_fn += np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-
+                    if self.slice_counter[sample_index] - 1 == slice_index:
+                        dice = (2 * acc_tp) / ((acc_fp + acc_fn) + 2 * acc_tp)
+                        logger.write(str(scale_index) + "," + str(acc_tp) + "," + str(acc_fp) + "," + str(acc_fn) + "," + str(dice) + "\n")
+                        print(str(dice))
+                        acc_tp = 0
+                        acc_fp = 0
+                        acc_fn = 0
+                        sample_index += 1
+                        slice_index = -1
+                    break;
+                else:
+                    scale_index += 1
 
             slice_index += 1
-
-
-
