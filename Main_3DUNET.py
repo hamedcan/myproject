@@ -7,7 +7,7 @@ from DS import DS
 from keras import backend as Keras
 
 # initialization and prepare data set#########################################################
-for rcount in range(0, 5):
+for rcount in range(0, 3):
     patch_size = [32, 32, 16]
     batch_size = 16
     epochs = 200
@@ -16,7 +16,7 @@ for rcount in range(0, 5):
     K = 5
     angles = []
     aug_scales = [0.5]
-    pp_scales = [0.8, 0.6, 0.4]
+    pp_scales = [0.8,0.6, 0.4]
 
 
 
