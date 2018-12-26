@@ -10,9 +10,9 @@ from keras import backend as Keras
 for rcount in range(0, 3):
     patch_size = [32, 32, 16]
     batch_size = 16
-    epochs = 200
+    epochs = 150
     repeat = 1
-    channel = 2
+    channel = 1
     K = 5
     angles = []
     aug_scales = [0.5]
