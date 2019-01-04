@@ -129,11 +129,11 @@ def get_model(logger, log_disable, input_shape, pool_size=(2, 2, 2), filter_size
     conv7_2 = BatchNormalization()(conv7_2)
 
 
-    # x = input_shape[0]
-    # y = input_shape[1]
-    # z = input_shape[2]
-    # conv7_2 = Cropping3D(cropping=((int(x / 4), int(x / 4)), (int(y / 4), int(y / 4)), (int(z / 4), int(z / 4))))(conv7_2)
-    # conv7_2 = UpSampling3D(size=(2,2,2))(conv7_2)
+    x = input_shape[0]
+    y = input_shape[1]
+    z = input_shape[2]
+    conv7_2 = Cropping3D(cropping=((int(x / 4), int(x / 4)), (int(y / 4), int(y / 4)), (int(z / 4), int(z / 4))))(conv7_2)
+    conv7_2 = UpSampling3D(size=(2,2,2))(conv7_2)
 
     conv8 = concatenate([conv7_1, conv7_2], axis=4)
     conv8 = Conv3D(n_labels, (1, 1, 1))(conv8)

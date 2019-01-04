@@ -7,7 +7,7 @@ from DS import DS
 from keras import backend as Keras
 
 # initialization and prepare data set#########################################################
-for rcount in range(0, 3):
+for rcount in range(0, 1):
     patch_size = [40, 40, 16]
     batch_size = 16
     epochs = 150

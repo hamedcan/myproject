@@ -243,21 +243,17 @@ class DS:
                 margin_gt[m:x - m, m:y - m, m:z - m] = np.zeros((x - 2 * m, y - 2 * m, z - 2 * m))
 
                 tp = np.count_nonzero(np.multiply(temp_gt, temp_pred))  # AND
-                tn = np.count_nonzero(np.add(temp_gt, temp_pred) == 0)
                 fp = np.count_nonzero(np.bitwise_and(temp_gt == 0, temp_pred == 1))
                 fn = np.count_nonzero(np.bitwise_and(temp_gt == 1, temp_pred == 0))
 
-                pred_size = np.count_nonzero(temp_pred)
-                gt_size = np.count_nonzero(temp_gt)
-
                 comp = self.complexity(temp_gt)
+                comp_pred = self.complexity(temp_pred)
 
                 dice = (2 * tp) / ((fp + fn) + 2 * tp)
 
                 if np.count_nonzero(margin_pred) == 0 or len(self.pp_scales) == scale_index + 1:
-                    logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index) + "," + str(
-                        tp) + "," + str(fp) + "," + str(fn) + "," + str(
-                        dice) + "," + str(pred_size) + "," + str(gt_size) + "," + str(comp) + "\n")
+                    logger.write(str(self.test_indexes[fold][i]) + "," + str(scale_index)+ str(
+                        dice) + "," + str(comp) + ","+ str(comp_pred) +"\n")
                     break
                 else:
                     scale_index += 1
